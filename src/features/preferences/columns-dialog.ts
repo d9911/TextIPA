@@ -42,11 +42,18 @@ export function columnSettings(project: Project, copy: Copy, locale: Language, s
           const original = project.phrases[index]!;
           const version = phraseVersion(project, original, language);
           phrase.translations ??= {};
-          phrase.translations[project.language] = { text: original.text, ipa: original.ipa, ipaStatus: original.ipaStatus };
+          phrase.translations[project.language] = {
+            text: original.text,
+            ipa: original.ipa,
+            ipaStatus: original.ipaStatus,
+            ...(original.wordIpa ? { wordIpa: original.wordIpa } : {}),
+          };
           delete phrase.translations[language];
           phrase.text = version.text;
           phrase.ipa = version.ipa;
           phrase.ipaStatus = version.ipaStatus;
+          if (version.wordIpa) phrase.wordIpa = version.wordIpa;
+          else delete phrase.wordIpa;
         }
       }
       view.dialog.close();

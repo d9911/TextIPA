@@ -11,12 +11,30 @@ library.activeId = project.id;
 
 test('links restore stable IDs, Unicode block names, search and rehearsal view without touching data', () => {
   const before = JSON.stringify(library);
-  const target = { projectId: project.id, block: 'Другой блок', phraseId: project.phrases[2]!.id, query: '', focus: true };
+  const target = { projectId: project.id, block: 'Другой блок', phraseId: project.phrases[2]!.id, query: '', focus: true, ipaDisplay: 'above' as const };
   const url = navigationUrl(new URL('http://localhost/?external=keep#anchor'), target);
   assert.ok(url.includes('external=keep'));
   assert.ok(url.endsWith('#anchor'));
   assert.deepEqual(resolveNavigation(new URL(url, 'http://localhost/').searchParams, library).state, target);
   assert.equal(JSON.stringify(library), before);
+});
+test('IPA placement links override saved preferences and reject invalid or duplicate values', () => {
+  const saved = structuredClone(library);
+  saved.settings.ipaDisplay = 'line';
+  assert.equal(resolveNavigation(new URLSearchParams(), saved).state.ipaDisplay, 'line');
+  const above = resolveNavigation(new URLSearchParams('ipa=above'), saved);
+  assert.equal(above.state.ipaDisplay, 'above');
+  assert.equal(saved.settings.ipaDisplay, 'line');
+  const url = navigationUrl(new URL('http://localhost/?external=keep&ipa=line#anchor'), above.state);
+  assert.equal(new URL(url, 'http://localhost').searchParams.get('ipa'), 'above');
+  assert.ok(url.includes('external=keep'));
+  assert.ok(url.endsWith('#anchor'));
+  for (const query of ['ipa=other', 'ipa=above&ipa=line', 'ipa=%00', 'ipa=' + 'a'.repeat(6)]) {
+    const result = resolveNavigation(new URLSearchParams(query), saved);
+    assert.equal(result.corrected, true);
+    assert.equal(result.state.ipaDisplay, 'line');
+  }
+  assert.equal(resolveNavigation(new URLSearchParams('ipa=line'), emptyLibrary()).state.ipaDisplay, 'line');
 });
 test('absent navigation starts from saved project; missing projects, blocks and phrases fall back safely', () => {
   assert.equal(resolveNavigation(new URLSearchParams(), library).state.projectId, project.id);
@@ -105,4 +123,42 @@ test('history preserves edits and foreign state, survives reload and truncates f
   index--;
   navigation.restore(browser.history.state);
   assert.equal(browser.location.search, '?phrase=two');
+});
+
+test('a clean app URL restores the reading position, while explicit links take precedence', async () => {
+  const { initialNavigation } = await import('../src/app/navigation.ts');
+  const { loadReadingPosition, saveReadingPosition, readingPositionKey } = await import('../src/infrastructure/storage.ts');
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+  };
+  const saved = new URLSearchParams({ project: project.id, phrase: project.phrases[1]!.id, focus: '1', ipa: 'above' });
+  assert.equal(saveReadingPosition(storage, saved), true);
+  const restored = resolveNavigation(initialNavigation(new URLSearchParams(), loadReadingPosition(storage)), library);
+  assert.equal(restored.state.phraseId, project.phrases[1]!.id);
+  assert.equal(restored.state.focus, true);
+  assert.equal(restored.state.ipaDisplay, 'above');
+  const linked = resolveNavigation(initialNavigation(new URLSearchParams({ project: project.id, phrase: project.phrases[0]!.id }), saved), library);
+  assert.equal(linked.state.phraseId, project.phrases[0]!.id);
+  assert.equal(linked.state.focus, false);
+  const placement = resolveNavigation(initialNavigation(new URLSearchParams('ipa=line'), saved), library);
+  assert.equal(placement.state.phraseId, project.phrases[1]!.id);
+  assert.equal(placement.state.ipaDisplay, 'line');
+  const reduced = { ...library, projects: [{ ...project, phrases: project.phrases.slice(2) }] };
+  assert.equal(resolveNavigation(initialNavigation(new URLSearchParams(), saved), reduced).state.phraseId, project.phrases[2]!.id);
+  values.delete(readingPositionKey);
+  assert.equal(loadReadingPosition(storage).toString(), '');
+  const unavailable = {
+    getItem: () => {
+      throw new Error('blocked');
+    },
+    setItem: () => {
+      throw new Error('full');
+    },
+  };
+  assert.equal(loadReadingPosition(unavailable).toString(), '');
+  assert.equal(saveReadingPosition(unavailable, saved), false);
 });

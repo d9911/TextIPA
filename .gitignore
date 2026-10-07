@@ -1,5 +1,6 @@
 node_modules/
 /examples/cable-es.json
+examples/text-ipa-library.json
 dist/
 coverage/
 .DS_Store
@@ -34,6 +35,9 @@ Desktop.ini
 *.zip
 *.tar.gz
 
-# Repeated QA screenshots are local diagnostics; keep the two README JPEGs.
-docs/images/navigation-*.png
-docs/images/text-ipa-*.png
+# Working documentation and QA artifacts stay local; only public README previews are versioned.
+/docs/*
+!/docs/images/
+/docs/images/*
+!/docs/images/app.jpg
+!/docs/images/reader-line.jpg

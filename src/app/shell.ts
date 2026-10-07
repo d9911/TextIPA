@@ -13,8 +13,8 @@ export function applyShellSettings(settings: Settings, copy: Copy): void {
   const label = settings.sidebarCollapsed ? copy.expandSidebar : copy.collapseSidebar;
   toggle?.setAttribute('aria-expanded', String(!settings.sidebarCollapsed));
   toggle?.setAttribute('aria-label', label);
+  document.querySelector('.sidebar-heading-label')?.setAttribute('aria-expanded', String(!settings.sidebarCollapsed));
   if (toggle) {
-    toggle.querySelector('.sidebar-symbol')!.textContent = settings.sidebarCollapsed ? '›' : '‹';
     toggle.querySelector('.sidebar-label')!.textContent = label;
   }
 }

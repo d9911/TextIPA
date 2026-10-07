@@ -1,0 +1,48 @@
+{
+  "id": "hello-three-languages",
+  "title": "Hello · ES / EN / RU",
+  "language": "es",
+  "dialect": "es-ES",
+  "columnLanguages": [
+    "es",
+    "en",
+    "ru"
+  ],
+  "updatedAt": "2026-10-07T15:00:00.000Z",
+  "phrases": [
+    {
+      "id": "hello-1",
+      "block": "Greeting",
+      "text": "Hola.",
+      "ipa": "[ˈola]",
+      "ipaStatus": "draft",
+      "wordIpa": [
+        {
+          "word": "Hola.",
+          "ipa": "[ˈola]"
+        }
+      ],
+      "pauseMs": 1000,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "Hello.",
+          "ipa": "[həˈləʊ]",
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Hello.",
+              "ipa": "[həˈləʊ]"
+            }
+          ]
+        },
+        "ru": {
+          "text": "Привет.",
+          "ipa": "",
+          "ipaStatus": "empty"
+        }
+      }
+    }
+  ]
+}

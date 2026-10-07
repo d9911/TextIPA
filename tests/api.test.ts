@@ -76,3 +76,10 @@ test('running HTTP service accepts local IPA and rejects cross-origin POST', asy
     await server.close();
   }
 });
+
+test('stdin termination preserves the last character of isolated words and one-letter tokens', async () => {
+  assert.deepEqual(await generateIpa(['una', 'a'], 'es', 'es-ES'), ['[ˈuna]', '[ˈa]']);
+  const ru = await generateIpa(['старик'], 'ru', 'ru-RU');
+  assert.ok(ru[0]?.includes('ik'));
+  assert.ok(!ru[0]?.includes('(en)'));
+});

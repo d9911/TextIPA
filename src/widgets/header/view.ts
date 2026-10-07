@@ -12,6 +12,7 @@ interface HeaderOptions {
   theme: (value: Settings['theme']) => void;
   preference: (key: ShellPreference, value: boolean) => void;
   guide: () => void;
+  display: (value: Settings['ipaDisplay']) => void;
 }
 export function headerView(options: HeaderOptions): HTMLElement {
   const { settings, copy } = options;
@@ -45,7 +46,7 @@ export function headerView(options: HeaderOptions): HTMLElement {
       ),
       'compact-field',
     ),
-    ...preferenceMenu(settings, copy, options.preference, options.guide),
+    ...preferenceMenu(settings, copy, options.preference, options.guide, options.display),
   );
   for (const field of tools.querySelectorAll<HTMLElement>('.compact-field')) {
     field.title = field.querySelector('.field-label')?.textContent ?? '';

@@ -1,14 +1,24 @@
-import type { Library, Phrase } from '../types/domain.ts';
+import type { Library, Phrase, Settings } from '../types/domain.ts';
 
-/** UI address only: never part of the persisted library or the IPA API. */
+/** UI address; persisted separately from the text library and never sent to the IPA API. */
 export interface NavigationState {
   projectId: string | null;
   block: string;
   phraseId: string | null;
   query: string;
   focus: boolean;
+  ipaDisplay?: Settings['ipaDisplay'];
 }
-const limits = { project: 150, block: 250, phrase: 150, q: 300, focus: 1 } as const;
+const limits = { project: 150, block: 250, phrase: 150, q: 300, focus: 1, ipa: 5 } as const;
+export function initialNavigation(params: URLSearchParams, saved: URLSearchParams): URLSearchParams {
+  if (['project', 'block', 'phrase', 'q', 'focus'].some((key) => params.has(key))) return params;
+  const restored = new URLSearchParams(saved);
+  if (params.has('ipa')) {
+    restored.delete('ipa');
+    for (const value of params.getAll('ipa')) restored.append('ipa', value);
+  }
+  return restored;
+}
 export function matchingPhrases(phrases: readonly Phrase[], block: string, query: string): Phrase[] {
   return phrases.filter((phrase) =>
     query ? (phrase.text + ' ' + phrase.ipa + ' ' + phrase.note).toLocaleLowerCase().includes(query.toLocaleLowerCase()) : !block || phrase.block === block,
@@ -30,12 +40,15 @@ export function resolveNavigation(params: URLSearchParams, library: Library): { 
   const phraseId = read('phrase');
   const query = read('q');
   const focus = read('focus') === '1';
+  const placement = read('ipa');
+  if (placement && placement !== 'above' && placement !== 'line') corrected = true;
+  const ipaDisplay = placement === 'above' || placement === 'line' ? placement : library.settings.ipaDisplay;
   const requested = library.projects.find((p) => p.id === projectId);
   const project = requested ?? library.projects.find((p) => p.id === library.activeId) ?? library.projects[0];
   if (projectId && !requested) corrected = true;
   if (!project) {
     if (block || phraseId || query || focus) corrected = true;
-    return { state: { projectId: null, block: '', phraseId: null, query: '', focus: false }, corrected };
+    return { state: { projectId: null, block: '', phraseId: null, query: '', focus: false, ipaDisplay }, corrected };
   }
   // Child addresses are scoped to their project; never apply stale IDs to a fallback project.
   if (projectId && !requested) block = '';
@@ -54,11 +67,12 @@ export function resolveNavigation(params: URLSearchParams, library: Library): { 
   const selected = visible.find((p) => p.id === phrase?.id) ?? blockFirst ?? visible[0];
   if (phraseId && selected?.id !== phraseId) corrected = true;
   if (focus && !selected) corrected = true;
-  return { state: { projectId: project.id, block, phraseId: selected?.id ?? null, query, focus: focus && Boolean(selected) }, corrected };
+  return { state: { projectId: project.id, block, phraseId: selected?.id ?? null, query, focus: focus && Boolean(selected), ipaDisplay }, corrected };
 }
 export function navigationUrl(url: URL, state: NavigationState): string {
   const next = new URL(url);
   for (const key of Object.keys(limits)) next.searchParams.delete(key);
+  if (state.ipaDisplay) next.searchParams.set('ipa', state.ipaDisplay);
   if (state.projectId) {
     next.searchParams.set('project', state.projectId);
     if (state.block) next.searchParams.set('block', state.block);

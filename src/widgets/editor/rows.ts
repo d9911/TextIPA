@@ -4,6 +4,8 @@ import { button, element, labelled } from '../../shared/ui/controls.ts';
 import { resizePhraseFields, revealPhrases } from './layout.ts';
 import { projectColumns, phraseVersion, languageLabel } from '../../domain/columns.ts';
 import type { Language } from '../../types/domain.ts';
+import type { Settings } from '../../types/domain.ts';
+import { pronunciationText } from '../../features/pronunciation/annotated-text.ts';
 interface RowsOptions {
   project: Project;
   rows: Phrase[];
@@ -12,6 +14,8 @@ interface RowsOptions {
   busy: boolean;
   showTranslation: boolean;
   locale: Language;
+  ipaDisplay: Settings['ipaDisplay'];
+  focusMode: boolean;
   copy: Copy;
   checkpoint: () => void;
   changed: () => void;
@@ -55,6 +59,7 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
     text.addEventListener('focus', options.checkpoint);
     text.addEventListener('input', () => {
       q.text = text.value;
+      delete q.wordIpa;
       resizePhraseFields(row);
       q.ipa = '';
       q.ipaStatus = 'empty';
@@ -70,6 +75,7 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
     ipa.addEventListener('focus', options.checkpoint);
     ipa.addEventListener('input', () => {
       q.ipa = ipa.value;
+      delete q.wordIpa;
       resizePhraseFields(row);
       q.ipaStatus = ipa.value.trim() ? 'draft' : 'empty';
       reviewed.checked = false;
@@ -89,6 +95,19 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
     const right = element('div', 'phrase-cell');
     right.append(ipa, status);
     columns.append(left, right);
+    const inlineReading = options.focusMode && options.ipaDisplay === 'above';
+    const preview = (cell: HTMLElement, version: Parameters<typeof pronunciationText>[0], language: string) => {
+      if (!inlineReading) return;
+      cell.classList.add('word-preview-cell');
+      const view = element('div', 'phrase-word-preview');
+      view.append(...pronunciationText(version, language, options.ipaDisplay, copy));
+      cell.prepend(view);
+    };
+    preview(left, q, p.language);
+    if (inlineReading && !(options.showTranslation && p.columnLanguages)) {
+      right.hidden = true;
+      columns.classList.add('inline-reading-columns');
+    }
     if (options.showTranslation && p.columnLanguages) {
       const languages = projectColumns(p);
       columns.classList.add('phrase-language-columns');
@@ -118,6 +137,7 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
           q.translations ??= {};
           q.translations[code] = version;
           version.text = translated.value;
+          delete version.wordIpa;
           version.ipa = '';
           version.ipaStatus = 'empty';
           transcription.value = '';
@@ -130,12 +150,14 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
           q.translations ??= {};
           q.translations[code] = version;
           version.ipa = transcription.value;
+          delete version.wordIpa;
           version.ipaStatus = version.ipa.trim() ? 'draft' : 'empty';
           resizePhraseFields(row);
           options.changed();
           if (options.focused() === q.id) options.reader();
         });
         cell.append(element('span', 'field-label', languageLabel(code, options.locale)), translated, transcription);
+        preview(cell, version, code);
         columns.append(cell);
       }
     } else if (options.showTranslation) {

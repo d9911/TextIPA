@@ -1,5 +1,6 @@
 import { dialects, emptyLibrary } from './preferences.ts';
 import { languageTag, engineLanguage, projectColumns, phraseVersion } from './columns.ts';
+import { validateWordIpa } from './word-ipa.ts';
 import type { Dialect, Language, Library, Phrase, Project } from '../types/domain.ts';
 const languages: readonly string[] = ['ru', 'en', 'es'];
 const statuses: readonly string[] = ['empty', 'draft', 'reviewed'];
@@ -39,6 +40,7 @@ export function validateProject(value: unknown): Project {
         const state = string(version.ipaStatus, 10) as Phrase['ipaStatus'];
         if (!statuses.includes(state)) throw new Error('INVALID_FILE');
         translations[tag] = { text: string(version.text, 3000), ipa: string(version.ipa, 5000), ipaStatus: state };
+        if (version.wordIpa !== undefined) translations[tag]!.wordIpa = validateWordIpa(version.wordIpa, translations[tag]!.text);
       }
     }
     return {
@@ -52,6 +54,7 @@ export function validateProject(value: unknown): Project {
       note: string(q.note, 3000),
       ...(q.translation !== undefined ? { translation: string(q.translation, 3000) } : {}),
       ...(q.translations !== undefined ? { translations } : {}),
+      ...(q.wordIpa !== undefined ? { wordIpa: validateWordIpa(q.wordIpa, string(q.text, 1500)) } : {}),
     };
   });
   if (!phrases.length) throw new Error('EMPTY_TEXT');
@@ -90,6 +93,7 @@ export function validateLibrary(value: unknown): Library {
     }
     if (languages.includes(String(s.locale))) base.settings.locale = s.locale as Language;
     if (['light', 'dark', 'system'].includes(String(s.theme))) base.settings.theme = s.theme as Library['settings']['theme'];
+    if (s.ipaDisplay === 'above' || s.ipaDisplay === 'line') base.settings.ipaDisplay = s.ipaDisplay;
     for (const [key, min, max] of [
       ['fontSize', 18, 40],
       ['ipaFontSize', 18, 48],
@@ -194,6 +198,7 @@ export function fingerprint(p: Project): string {
       q.ipa,
       q.pauseMs,
       q.translation ?? '',
+      q.wordIpa,
       Object.entries(q.translations ?? {}).sort(([a], [b]) => a.localeCompare(b)),
     ]),
   ]);

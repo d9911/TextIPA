@@ -20,14 +20,196 @@
         "en": {
           "text": "Once upon a time, an old man and an old woman lived in a little house beside the forest.",
           "ipa": "[wˈʌns əpˌɒn ɐ tˈaɪm ɐn ˈəʊld mˈan and ɐn ˈəʊld wˈʊmən lˈɪvd ɪn ɐ lˈɪtəl hˈaʊs bɪsˌaɪd ðə fˈɒɹɪst]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Once",
+              "ipa": "[wˈʌns]"
+            },
+            {
+              "word": "upon",
+              "ipa": "[əpˈɒn]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "time,",
+              "ipa": "[tˈaɪm]"
+            },
+            {
+              "word": "an",
+              "ipa": "[ˈan]"
+            },
+            {
+              "word": "old",
+              "ipa": "[ˈəʊld]"
+            },
+            {
+              "word": "man",
+              "ipa": "[mˈan]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "an",
+              "ipa": "[ˈan]"
+            },
+            {
+              "word": "old",
+              "ipa": "[ˈəʊld]"
+            },
+            {
+              "word": "woman",
+              "ipa": "[wˈʊmən]"
+            },
+            {
+              "word": "lived",
+              "ipa": "[lˈɪvd]"
+            },
+            {
+              "word": "in",
+              "ipa": "[ˈɪn]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "little",
+              "ipa": "[lˈɪtəl]"
+            },
+            {
+              "word": "house",
+              "ipa": "[hˈaʊs]"
+            },
+            {
+              "word": "beside",
+              "ipa": "[bɪsˈaɪd]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "forest.",
+              "ipa": "[fˈɒɹɪst]"
+            }
+          ]
         },
         "ru": {
           "text": "Жили-были старик со старухой в маленьком домике у леса.",
           "ipa": "[ʒˈyɭʲɪbˌyɭʲɪ starʲˈik sˈo starˈuxʌj v mˈɑɭʲinkʌm dˈomʲikʲi u ɭʲˈesa]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Жили-были",
+              "ipa": "[ʒˈyɭʲɪbˌyɭʲɪ]"
+            },
+            {
+              "word": "старик",
+              "ipa": "[starʲˈik]"
+            },
+            {
+              "word": "со",
+              "ipa": "[sˈo]"
+            },
+            {
+              "word": "старухой",
+              "ipa": "[starˈuxʌj]"
+            },
+            {
+              "word": "в",
+              "ipa": "[vˈɛ]"
+            },
+            {
+              "word": "маленьком",
+              "ipa": "[mˈɑɭʲinkʌm]"
+            },
+            {
+              "word": "домике",
+              "ipa": "[dˈomʲikʲi]"
+            },
+            {
+              "word": "у",
+              "ipa": "[ˈu]"
+            },
+            {
+              "word": "леса.",
+              "ipa": "[ɭʲˈesa]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Érase",
+          "ipa": "[ˈeɾase]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "vez",
+          "ipa": "[ˈbeθ]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "anciano",
+          "ipa": "[anˈθjano]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "anciana",
+          "ipa": "[anˈθjana]"
+        },
+        {
+          "word": "que",
+          "ipa": "[ˈke]"
+        },
+        {
+          "word": "vivían",
+          "ipa": "[biˈβian]"
+        },
+        {
+          "word": "en",
+          "ipa": "[ˈen]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "casita",
+          "ipa": "[kaˈsita]"
+        },
+        {
+          "word": "junto",
+          "ipa": "[ˈxunto]"
+        },
+        {
+          "word": "al",
+          "ipa": "[ˈal]"
+        },
+        {
+          "word": "bosque.",
+          "ipa": "[ˈboske]"
+        }
+      ]
     },
     {
       "id": "kolobok-2",
@@ -43,14 +225,188 @@
         "en": {
           "text": "One day, the old woman gathered a little flour and baked a round loaf called Kolobok.",
           "ipa": "[wˈɒn dˈeɪ ðɪ ˈəʊld wˈʊmən ɡˈaðəd ɐ lˈɪtəl flˈaʊə and bˈeɪkt ɐ ɹˈaʊnd lˈəʊf kˈɔːld kˈɒləbˌɒk]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "One",
+              "ipa": "[wˈɒn]"
+            },
+            {
+              "word": "day,",
+              "ipa": "[dˈeɪ]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "old",
+              "ipa": "[ˈəʊld]"
+            },
+            {
+              "word": "woman",
+              "ipa": "[wˈʊmən]"
+            },
+            {
+              "word": "gathered",
+              "ipa": "[ɡˈaðəd]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "little",
+              "ipa": "[lˈɪtəl]"
+            },
+            {
+              "word": "flour",
+              "ipa": "[flˈaʊə]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "baked",
+              "ipa": "[bˈeɪkt]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "round",
+              "ipa": "[ɹˈaʊnd]"
+            },
+            {
+              "word": "loaf",
+              "ipa": "[lˈəʊf]"
+            },
+            {
+              "word": "called",
+              "ipa": "[kˈɔːld]"
+            },
+            {
+              "word": "Kolobok.",
+              "ipa": "[kˈɒləbˌɒk]"
+            }
+          ]
         },
         "ru": {
           "text": "Однажды старуха собрала немного муки и испекла круглый хлебец — Колобок.",
           "ipa": "[ʌdnˈɑʒdy starˈuxa sʌbraɭˈɑ nʲimnˈoɡʌ mˈukʲɪ ɪ ɪspʲikɭˈɑ krˈuɡɭyj xɭʲˈebʲits kʌɭʌbˈok]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Однажды",
+              "ipa": "[ʌdnˈɑʒdy]"
+            },
+            {
+              "word": "старуха",
+              "ipa": "[starˈuxa]"
+            },
+            {
+              "word": "собрала",
+              "ipa": "[sʌbraɭˈɑ]"
+            },
+            {
+              "word": "немного",
+              "ipa": "[nʲimnˈoɡʌ]"
+            },
+            {
+              "word": "муки",
+              "ipa": "[mˈukʲɪ]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "испекла",
+              "ipa": "[ɪspʲikɭˈɑ]"
+            },
+            {
+              "word": "круглый",
+              "ipa": "[krˈuɡɭyj]"
+            },
+            {
+              "word": "хлебец",
+              "ipa": "[xɭʲˈebʲits]"
+            },
+            {
+              "word": "Колобок.",
+              "ipa": "[kʌɭʌbˈok]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "día,",
+          "ipa": "[ˈdia]"
+        },
+        {
+          "word": "la",
+          "ipa": "[ˈla]"
+        },
+        {
+          "word": "anciana",
+          "ipa": "[anˈθjana]"
+        },
+        {
+          "word": "reunió",
+          "ipa": "[reu̯ˈnjo]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "poco",
+          "ipa": "[ˈpoko]"
+        },
+        {
+          "word": "de",
+          "ipa": "[ˈde]"
+        },
+        {
+          "word": "harina",
+          "ipa": "[aˈɾina]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "preparó",
+          "ipa": "[pɾepaˈɾo]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "pan",
+          "ipa": "[ˈpan]"
+        },
+        {
+          "word": "redondo",
+          "ipa": "[reˈðondo]"
+        },
+        {
+          "word": "llamado",
+          "ipa": "[ʝaˈmaðo]"
+        },
+        {
+          "word": "Kolobok.",
+          "ipa": "[koloˈβok]"
+        }
+      ]
     },
     {
       "id": "kolobok-3",
@@ -66,14 +422,176 @@
         "en": {
           "text": "She left it on the windowsill to cool, but Kolobok jumped onto the path.",
           "ipa": "[ʃiː lˈɛft ɪt ɒnðə wˈɪndəʊsˌɪl tə kˈuːl bˌʌt kˈɒləbˌɒk dʒˈʌmpt ˌɒntʊ ðə pˈaθ]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "She",
+              "ipa": "[ʃˈiː]"
+            },
+            {
+              "word": "left",
+              "ipa": "[lˈɛft]"
+            },
+            {
+              "word": "it",
+              "ipa": "[ˈɪt]"
+            },
+            {
+              "word": "on",
+              "ipa": "[ˈɒn]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "windowsill",
+              "ipa": "[wˈɪndəʊsˌɪl]"
+            },
+            {
+              "word": "to",
+              "ipa": "[tˈuː]"
+            },
+            {
+              "word": "cool,",
+              "ipa": "[kˈuːl]"
+            },
+            {
+              "word": "but",
+              "ipa": "[bˈʌt]"
+            },
+            {
+              "word": "Kolobok",
+              "ipa": "[kˈɒləbˌɒk]"
+            },
+            {
+              "word": "jumped",
+              "ipa": "[dʒˈʌmpt]"
+            },
+            {
+              "word": "onto",
+              "ipa": "[ˈɒntʊ]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "path.",
+              "ipa": "[pˈaθ]"
+            }
+          ]
         },
         "ru": {
           "text": "Она положила его на окно остывать, но Колобок прыгнул на дорожку.",
           "ipa": "[ʌnˈɑ pʌɭʌʒˈyɭa jɪvˈo nə ʌknˈo ʌstyvˈɑtʲ no kʌɭʌbˈok prˈyɡnuɭ nə dʌrˈoʃku]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Она",
+              "ipa": "[ʌnˈɑ]"
+            },
+            {
+              "word": "положила",
+              "ipa": "[pʌɭʌʒˈyɭa]"
+            },
+            {
+              "word": "его",
+              "ipa": "[jɪvˈo]"
+            },
+            {
+              "word": "на",
+              "ipa": "[nˈɑ]"
+            },
+            {
+              "word": "окно",
+              "ipa": "[ʌknˈo]"
+            },
+            {
+              "word": "остывать,",
+              "ipa": "[ʌstyvˈɑtʲ]"
+            },
+            {
+              "word": "но",
+              "ipa": "[nˈo]"
+            },
+            {
+              "word": "Колобок",
+              "ipa": "[kʌɭʌbˈok]"
+            },
+            {
+              "word": "прыгнул",
+              "ipa": "[prˈyɡnuɭ]"
+            },
+            {
+              "word": "на",
+              "ipa": "[nˈɑ]"
+            },
+            {
+              "word": "дорожку.",
+              "ipa": "[dʌrˈoʃku]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Lo",
+          "ipa": "[ˈlo]"
+        },
+        {
+          "word": "dejó",
+          "ipa": "[deˈxo]"
+        },
+        {
+          "word": "en",
+          "ipa": "[ˈen]"
+        },
+        {
+          "word": "la",
+          "ipa": "[ˈla]"
+        },
+        {
+          "word": "ventana",
+          "ipa": "[benˈtana]"
+        },
+        {
+          "word": "para",
+          "ipa": "[ˈpaɾa]"
+        },
+        {
+          "word": "que",
+          "ipa": "[ˈke]"
+        },
+        {
+          "word": "se",
+          "ipa": "[ˈse]"
+        },
+        {
+          "word": "enfriara,",
+          "ipa": "[emfɾiˈaɾa]"
+        },
+        {
+          "word": "pero",
+          "ipa": "[ˈpeɾo]"
+        },
+        {
+          "word": "Kolobok",
+          "ipa": "[koloˈβok]"
+        },
+        {
+          "word": "saltó",
+          "ipa": "[salˈto]"
+        },
+        {
+          "word": "al",
+          "ipa": "[ˈal]"
+        },
+        {
+          "word": "camino.",
+          "ipa": "[kaˈmino]"
+        }
+      ]
     },
     {
       "id": "kolobok-4",
@@ -89,14 +607,124 @@
         "en": {
           "text": "He rolled between the trees and met a hare.",
           "ipa": "[hiː ɹˈəʊld bɪtwˌiːn ðə tɹˈiːz and mˈɛt ɐ hˈeə]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "He",
+              "ipa": "[hˈiː]"
+            },
+            {
+              "word": "rolled",
+              "ipa": "[ɹˈəʊld]"
+            },
+            {
+              "word": "between",
+              "ipa": "[bɪtwˈiːn]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "trees",
+              "ipa": "[tɹˈiːz]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "met",
+              "ipa": "[mˈɛt]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "hare.",
+              "ipa": "[hˈeə]"
+            }
+          ]
         },
         "ru": {
           "text": "Он покатился между деревьями и встретил зайца.",
           "ipa": "[ˈon pʌkatʲˈiɭsʲʌ mʲˈeʒdu dʲirʲˈevjjamʲɪ ɪ fstrʲˈetʲiɭ zˈɑjtsa]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Он",
+              "ipa": "[ˈon]"
+            },
+            {
+              "word": "покатился",
+              "ipa": "[pʌkatʲˈiɭsʲʌ]"
+            },
+            {
+              "word": "между",
+              "ipa": "[mʲˈeʒdu]"
+            },
+            {
+              "word": "деревьями",
+              "ipa": "[dʲirʲˈevjjamʲɪ]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "встретил",
+              "ipa": "[fstrʲˈetʲiɭ]"
+            },
+            {
+              "word": "зайца.",
+              "ipa": "[zˈɑjtsa]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Rodó",
+          "ipa": "[roˈðo]"
+        },
+        {
+          "word": "entre",
+          "ipa": "[ˈentɾe]"
+        },
+        {
+          "word": "los",
+          "ipa": "[ˈlos]"
+        },
+        {
+          "word": "árboles",
+          "ipa": "[ˈaɾβoles]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "se",
+          "ipa": "[ˈse]"
+        },
+        {
+          "word": "encontró",
+          "ipa": "[enkonˈtɾo]"
+        },
+        {
+          "word": "con",
+          "ipa": "[ˈkon]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "liebre.",
+          "ipa": "[liˈeβɾe]"
+        }
+      ]
     },
     {
       "id": "kolobok-5",
@@ -112,14 +740,168 @@
         "en": {
           "text": "The hare wanted to eat him, but Kolobok sang a song and rolled away.",
           "ipa": "[ðə hˈeə wˈɒntɪd tʊ ˈiːt hˌɪm bˌʌt kˈɒləbˌɒk sˈaŋ ɐ sˈɒŋ and ɹˈəʊld ɐwˈeɪ]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "The",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "hare",
+              "ipa": "[hˈeə]"
+            },
+            {
+              "word": "wanted",
+              "ipa": "[wˈɒntɪd]"
+            },
+            {
+              "word": "to",
+              "ipa": "[tˈuː]"
+            },
+            {
+              "word": "eat",
+              "ipa": "[ˈiːt]"
+            },
+            {
+              "word": "him,",
+              "ipa": "[hˈɪm]"
+            },
+            {
+              "word": "but",
+              "ipa": "[bˈʌt]"
+            },
+            {
+              "word": "Kolobok",
+              "ipa": "[kˈɒləbˌɒk]"
+            },
+            {
+              "word": "sang",
+              "ipa": "[sˈaŋ]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "song",
+              "ipa": "[sˈɒŋ]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "rolled",
+              "ipa": "[ɹˈəʊld]"
+            },
+            {
+              "word": "away.",
+              "ipa": "[ɐwˈeɪ]"
+            }
+          ]
         },
         "ru": {
           "text": "Заяц хотел его съесть, но Колобок спел песенку и покатился дальше.",
           "ipa": "[zˈɑjats xʌtʲˈeɭ jɪvˈo sjjˈestʲ no kʌɭʌbˈok spʲˈeɭ pʲˈesʲinku ɪ pʌkatʲˈiɭsʲʌ dˈɑɭʃy]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Заяц",
+              "ipa": "[zˈɑjats]"
+            },
+            {
+              "word": "хотел",
+              "ipa": "[xʌtʲˈeɭ]"
+            },
+            {
+              "word": "его",
+              "ipa": "[jɪvˈo]"
+            },
+            {
+              "word": "съесть,",
+              "ipa": "[sjjˈestʲ]"
+            },
+            {
+              "word": "но",
+              "ipa": "[nˈo]"
+            },
+            {
+              "word": "Колобок",
+              "ipa": "[kʌɭʌbˈok]"
+            },
+            {
+              "word": "спел",
+              "ipa": "[spʲˈeɭ]"
+            },
+            {
+              "word": "песенку",
+              "ipa": "[pʲˈesʲinku]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "покатился",
+              "ipa": "[pʌkatʲˈiɭsʲʌ]"
+            },
+            {
+              "word": "дальше.",
+              "ipa": "[dˈɑɭʃy]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "La",
+          "ipa": "[ˈla]"
+        },
+        {
+          "word": "liebre",
+          "ipa": "[liˈeβɾe]"
+        },
+        {
+          "word": "quiso",
+          "ipa": "[ˈkiso]"
+        },
+        {
+          "word": "comérselo,",
+          "ipa": "[koˈmeɾselo]"
+        },
+        {
+          "word": "pero",
+          "ipa": "[ˈpeɾo]"
+        },
+        {
+          "word": "Kolobok",
+          "ipa": "[koloˈβok]"
+        },
+        {
+          "word": "cantó",
+          "ipa": "[kanˈto]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "canción",
+          "ipa": "[kanˈθjon]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "siguió",
+          "ipa": "[siˈɣjo]"
+        },
+        {
+          "word": "rodando.",
+          "ipa": "[roˈðando]"
+        }
+      ]
     },
     {
       "id": "kolobok-6",
@@ -135,14 +917,192 @@
         "en": {
           "text": "Then he met a wolf and a bear, and he managed to escape from them too.",
           "ipa": "[ðˈɛn hiː mˈɛt ɐ wˈʊlf and ɐ bˈeə and hiː mˈanɪdʒd tʊ ɛskˈeɪp fɹɒm ðˌɛm tˈuː]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Then",
+              "ipa": "[ðˈɛn]"
+            },
+            {
+              "word": "he",
+              "ipa": "[hˈiː]"
+            },
+            {
+              "word": "met",
+              "ipa": "[mˈɛt]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "wolf",
+              "ipa": "[wˈʊlf]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "bear,",
+              "ipa": "[bˈeə]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "he",
+              "ipa": "[hˈiː]"
+            },
+            {
+              "word": "managed",
+              "ipa": "[mˈanɪdʒd]"
+            },
+            {
+              "word": "to",
+              "ipa": "[tˈuː]"
+            },
+            {
+              "word": "escape",
+              "ipa": "[ɛskˈeɪp]"
+            },
+            {
+              "word": "from",
+              "ipa": "[fɹˈɒm]"
+            },
+            {
+              "word": "them",
+              "ipa": "[ðˈɛm]"
+            },
+            {
+              "word": "too.",
+              "ipa": "[tˈuː]"
+            }
+          ]
         },
         "ru": {
           "text": "Потом он встретил волка и медведя и от них тоже сумел убежать.",
           "ipa": "[pˈotʌm ˈon fstrʲˈetʲiɭ vˈoɭka ɪ mʲidvʲˈedʲʌ ɪ ot nʲˈix tˈoʒy sumʲˈeɭ ubʲiʒˈɑtʲ]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Потом",
+              "ipa": "[pˈotʌm]"
+            },
+            {
+              "word": "он",
+              "ipa": "[ˈon]"
+            },
+            {
+              "word": "встретил",
+              "ipa": "[fstrʲˈetʲiɭ]"
+            },
+            {
+              "word": "волка",
+              "ipa": "[vˈoɭka]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "медведя",
+              "ipa": "[mʲidvʲˈedʲʌ]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "от",
+              "ipa": "[ˈot]"
+            },
+            {
+              "word": "них",
+              "ipa": "[nʲˈix]"
+            },
+            {
+              "word": "тоже",
+              "ipa": "[tˈoʒy]"
+            },
+            {
+              "word": "сумел",
+              "ipa": "[sumʲˈeɭ]"
+            },
+            {
+              "word": "убежать.",
+              "ipa": "[ubʲiʒˈɑtʲ]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Después",
+          "ipa": "[desˈpwes]"
+        },
+        {
+          "word": "se",
+          "ipa": "[ˈse]"
+        },
+        {
+          "word": "encontró",
+          "ipa": "[enkonˈtɾo]"
+        },
+        {
+          "word": "con",
+          "ipa": "[ˈkon]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "lobo",
+          "ipa": "[ˈloβo]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "oso,",
+          "ipa": "[ˈoso]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "también",
+          "ipa": "[tamˈbjen]"
+        },
+        {
+          "word": "logró",
+          "ipa": "[loˈɣɾo]"
+        },
+        {
+          "word": "escapar",
+          "ipa": "[eskaˈpaɾ]"
+        },
+        {
+          "word": "de",
+          "ipa": "[ˈde]"
+        },
+        {
+          "word": "ellos.",
+          "ipa": "[ˈeʝos]"
+        }
+      ]
     },
     {
       "id": "kolobok-7",
@@ -158,14 +1118,180 @@
         "en": {
           "text": "When he reached the river, he saw a fox listening with a smile.",
           "ipa": "[wˌɛn hiː ɹˈiːtʃt ðə ɹˈɪvə hiː sˈɔː ɐ fˈɒks lˈɪsənɪŋ wɪð ɐ smˈaɪl]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "When",
+              "ipa": "[wˈɛn]"
+            },
+            {
+              "word": "he",
+              "ipa": "[hˈiː]"
+            },
+            {
+              "word": "reached",
+              "ipa": "[ɹˈiːtʃt]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "river,",
+              "ipa": "[ɹˈɪvə]"
+            },
+            {
+              "word": "he",
+              "ipa": "[hˈiː]"
+            },
+            {
+              "word": "saw",
+              "ipa": "[sˈɔː]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "fox",
+              "ipa": "[fˈɒks]"
+            },
+            {
+              "word": "listening",
+              "ipa": "[lˈɪsənɪŋ]"
+            },
+            {
+              "word": "with",
+              "ipa": "[wˈɪð]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "smile.",
+              "ipa": "[smˈaɪl]"
+            }
+          ]
         },
         "ru": {
           "text": "Когда он добрался до реки, то увидел лису, которая слушала его с улыбкой.",
           "ipa": "[kʌɡdˈɑ ˈon dʌbrˈɑɭsʲʌ dˈo rʲˈekʲɪ tˈo uvʲˈidʲiɭ ɭʲˈisu kʌtˈorʌja sɭˈuʃʌɭa jɪvˈo s uɭˈypkʌj]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Когда",
+              "ipa": "[kʌɡdˈɑ]"
+            },
+            {
+              "word": "он",
+              "ipa": "[ˈon]"
+            },
+            {
+              "word": "добрался",
+              "ipa": "[dʌbrˈɑɭsʲʌ]"
+            },
+            {
+              "word": "до",
+              "ipa": "[dˈo]"
+            },
+            {
+              "word": "реки,",
+              "ipa": "[rʲˈekʲɪ]"
+            },
+            {
+              "word": "то",
+              "ipa": "[tˈo]"
+            },
+            {
+              "word": "увидел",
+              "ipa": "[uvʲˈidʲiɭ]"
+            },
+            {
+              "word": "лису,",
+              "ipa": "[ɭʲˈisu]"
+            },
+            {
+              "word": "которая",
+              "ipa": "[kʌtˈorʌja]"
+            },
+            {
+              "word": "слушала",
+              "ipa": "[sɭˈuʃʌɭa]"
+            },
+            {
+              "word": "его",
+              "ipa": "[jɪvˈo]"
+            },
+            {
+              "word": "с",
+              "ipa": "[ˈɛs]"
+            },
+            {
+              "word": "улыбкой.",
+              "ipa": "[uɭˈypkʌj]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Al",
+          "ipa": "[ˈal]"
+        },
+        {
+          "word": "llegar",
+          "ipa": "[ʝeˈɣaɾ]"
+        },
+        {
+          "word": "al",
+          "ipa": "[ˈal]"
+        },
+        {
+          "word": "río,",
+          "ipa": "[ˈrio]"
+        },
+        {
+          "word": "vio",
+          "ipa": "[ˈbjo]"
+        },
+        {
+          "word": "a",
+          "ipa": "[ˈa]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "zorra",
+          "ipa": "[ˈθora]"
+        },
+        {
+          "word": "que",
+          "ipa": "[ˈke]"
+        },
+        {
+          "word": "lo",
+          "ipa": "[ˈlo]"
+        },
+        {
+          "word": "escuchaba",
+          "ipa": "[eskuˈt͡ʃaβa]"
+        },
+        {
+          "word": "con",
+          "ipa": "[ˈkon]"
+        },
+        {
+          "word": "una",
+          "ipa": "[ˈuna]"
+        },
+        {
+          "word": "sonrisa.",
+          "ipa": "[sonˈrisa]"
+        }
+      ]
     },
     {
       "id": "kolobok-8",
@@ -181,14 +1307,200 @@
         "en": {
           "text": "Your song is lovely, said the fox, but I cannot hear you very well. Come a little closer.",
           "ipa": "[jɔː sˈɒŋ ɪz lˈʌvli sˈɛd ðə fˈɒks bˌʌt aɪ kˈanɒt hˈiə juː vˈɛɹi wˈɛl kˈʌm ɐ lˈɪtəl klˈəʊsə]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Your",
+              "ipa": "[jˈɔː]"
+            },
+            {
+              "word": "song",
+              "ipa": "[sˈɒŋ]"
+            },
+            {
+              "word": "is",
+              "ipa": "[ˈɪz]"
+            },
+            {
+              "word": "lovely,",
+              "ipa": "[lˈʌvli]"
+            },
+            {
+              "word": "said",
+              "ipa": "[sˈɛd]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "fox,",
+              "ipa": "[fˈɒks]"
+            },
+            {
+              "word": "but",
+              "ipa": "[bˈʌt]"
+            },
+            {
+              "word": "I",
+              "ipa": "[ˈaɪ]"
+            },
+            {
+              "word": "cannot",
+              "ipa": "[kˈanɒt]"
+            },
+            {
+              "word": "hear",
+              "ipa": "[hˈiə]"
+            },
+            {
+              "word": "you",
+              "ipa": "[jˈuː]"
+            },
+            {
+              "word": "very",
+              "ipa": "[vˈɛɹi]"
+            },
+            {
+              "word": "well.",
+              "ipa": "[wˈɛl]"
+            },
+            {
+              "word": "Come",
+              "ipa": "[kˈʌm]"
+            },
+            {
+              "word": "a",
+              "ipa": "[ˈeɪ]"
+            },
+            {
+              "word": "little",
+              "ipa": "[lˈɪtəl]"
+            },
+            {
+              "word": "closer.",
+              "ipa": "[klˈəʊsə]"
+            }
+          ]
         },
         "ru": {
           "text": "«Твоя песенка чудесная, — сказала лиса, — но я плохо тебя слышу. Подойди поближе».",
           "ipa": "[tvʌˈja pʲˈesʲinka tʃʲudʲˈesnʌja skazˈɑɭa ɭʲˈisa no ˈja pɭˈoxʌ tʲibʲˈɑ sɭˈyʃu pʌdʌjdʲˈɪ pʌbɭʲˈiʒy]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "«Твоя",
+              "ipa": "[tvʌˈja]"
+            },
+            {
+              "word": "песенка",
+              "ipa": "[pʲˈesʲinka]"
+            },
+            {
+              "word": "чудесная,",
+              "ipa": "[tʃʲudʲˈesnʌja]"
+            },
+            {
+              "word": "сказала",
+              "ipa": "[skazˈɑɭa]"
+            },
+            {
+              "word": "лиса,",
+              "ipa": "[ɭʲˈisa]"
+            },
+            {
+              "word": "но",
+              "ipa": "[nˈo]"
+            },
+            {
+              "word": "я",
+              "ipa": "[ˈja]"
+            },
+            {
+              "word": "плохо",
+              "ipa": "[pɭˈoxʌ]"
+            },
+            {
+              "word": "тебя",
+              "ipa": "[tʲibʲˈɑ]"
+            },
+            {
+              "word": "слышу.",
+              "ipa": "[sɭˈyʃu]"
+            },
+            {
+              "word": "Подойди",
+              "ipa": "[pʌdʌjdʲˈɪ]"
+            },
+            {
+              "word": "поближе».",
+              "ipa": "[pʌbɭʲˈiʒy]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Tu",
+          "ipa": "[ˈtu]"
+        },
+        {
+          "word": "canción",
+          "ipa": "[kanˈθjon]"
+        },
+        {
+          "word": "es",
+          "ipa": "[ˈes]"
+        },
+        {
+          "word": "preciosa,",
+          "ipa": "[pɾeˈθjosa]"
+        },
+        {
+          "word": "dijo",
+          "ipa": "[ˈdixo]"
+        },
+        {
+          "word": "la",
+          "ipa": "[ˈla]"
+        },
+        {
+          "word": "zorra,",
+          "ipa": "[ˈθora]"
+        },
+        {
+          "word": "pero",
+          "ipa": "[ˈpeɾo]"
+        },
+        {
+          "word": "no",
+          "ipa": "[ˈno]"
+        },
+        {
+          "word": "te",
+          "ipa": "[ˈte]"
+        },
+        {
+          "word": "oigo",
+          "ipa": "[ˈoi̯ɣo]"
+        },
+        {
+          "word": "bien.",
+          "ipa": "[ˈbjen]"
+        },
+        {
+          "word": "Acércate",
+          "ipa": "[aˈθeɾkate]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "poco.",
+          "ipa": "[ˈpoko]"
+        }
+      ]
     },
     {
       "id": "kolobok-9",
@@ -204,14 +1516,180 @@
         "en": {
           "text": "Kolobok jumped onto her nose to sing louder, and the fox ate him.",
           "ipa": "[kˈɒləbˌɒk dʒˈʌmpt ˌɒntʊ hɜː nˈəʊz tə sˈɪŋ lˈaʊdə and ðə fˈɒks ˈeɪt hˌɪm]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Kolobok",
+              "ipa": "[kˈɒləbˌɒk]"
+            },
+            {
+              "word": "jumped",
+              "ipa": "[dʒˈʌmpt]"
+            },
+            {
+              "word": "onto",
+              "ipa": "[ˈɒntʊ]"
+            },
+            {
+              "word": "her",
+              "ipa": "[hˈɜː]"
+            },
+            {
+              "word": "nose",
+              "ipa": "[nˈəʊz]"
+            },
+            {
+              "word": "to",
+              "ipa": "[tˈuː]"
+            },
+            {
+              "word": "sing",
+              "ipa": "[sˈɪŋ]"
+            },
+            {
+              "word": "louder,",
+              "ipa": "[lˈaʊdə]"
+            },
+            {
+              "word": "and",
+              "ipa": "[ˈand]"
+            },
+            {
+              "word": "the",
+              "ipa": "[ðˈə]"
+            },
+            {
+              "word": "fox",
+              "ipa": "[fˈɒks]"
+            },
+            {
+              "word": "ate",
+              "ipa": "[ˈeɪt]"
+            },
+            {
+              "word": "him.",
+              "ipa": "[hˈɪm]"
+            }
+          ]
         },
         "ru": {
           "text": "Колобок прыгнул ей на нос, чтобы спеть погромче, и лиса его съела.",
           "ipa": "[kʌɭʌbˈok prˈyɡnuɭ jˈej nə nˈos ʃtˈoby spʲˈetʲ pʌɡrˈomtʃʲi ɪ ɭʲˈisa jɪvˈo sjjˈeɭa]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Колобок",
+              "ipa": "[kʌɭʌbˈok]"
+            },
+            {
+              "word": "прыгнул",
+              "ipa": "[prˈyɡnuɭ]"
+            },
+            {
+              "word": "ей",
+              "ipa": "[jˈej]"
+            },
+            {
+              "word": "на",
+              "ipa": "[nˈɑ]"
+            },
+            {
+              "word": "нос,",
+              "ipa": "[nˈos]"
+            },
+            {
+              "word": "чтобы",
+              "ipa": "[ʃtˈoby]"
+            },
+            {
+              "word": "спеть",
+              "ipa": "[spʲˈetʲ]"
+            },
+            {
+              "word": "погромче,",
+              "ipa": "[pʌɡrˈomtʃʲi]"
+            },
+            {
+              "word": "и",
+              "ipa": "[ˈi]"
+            },
+            {
+              "word": "лиса",
+              "ipa": "[ɭʲˈisa]"
+            },
+            {
+              "word": "его",
+              "ipa": "[jɪvˈo]"
+            },
+            {
+              "word": "съела.",
+              "ipa": "[sjjˈeɭa]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Kolobok",
+          "ipa": "[koloˈβok]"
+        },
+        {
+          "word": "saltó",
+          "ipa": "[salˈto]"
+        },
+        {
+          "word": "sobre",
+          "ipa": "[ˈsoβɾe]"
+        },
+        {
+          "word": "su",
+          "ipa": "[ˈsu]"
+        },
+        {
+          "word": "nariz",
+          "ipa": "[naˈɾiθ]"
+        },
+        {
+          "word": "para",
+          "ipa": "[ˈpaɾa]"
+        },
+        {
+          "word": "cantar",
+          "ipa": "[kanˈtaɾ]"
+        },
+        {
+          "word": "más",
+          "ipa": "[ˈmas]"
+        },
+        {
+          "word": "fuerte,",
+          "ipa": "[ˈfweɾte]"
+        },
+        {
+          "word": "y",
+          "ipa": "[ˈi]"
+        },
+        {
+          "word": "la",
+          "ipa": "[ˈla]"
+        },
+        {
+          "word": "zorra",
+          "ipa": "[ˈθora]"
+        },
+        {
+          "word": "se",
+          "ipa": "[ˈse]"
+        },
+        {
+          "word": "lo",
+          "ipa": "[ˈlo]"
+        },
+        {
+          "word": "comió.",
+          "ipa": "[koˈmjo]"
+        }
+      ]
     },
     {
       "id": "kolobok-10",
@@ -227,14 +1705,192 @@
         "en": {
           "text": "That is how this tale ends: escaping danger does not mean we can trust everyone.",
           "ipa": "[ðat ɪz hˌaʊ ðɪs tˈeɪl ˈɛndz ɛskˈeɪpɪŋ dˈeɪndʒə dʌznˌɒt mˈiːn wiː kan tɹˈʌst ˈɛvɹɪwˌɒn]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "That",
+              "ipa": "[ðˈat]"
+            },
+            {
+              "word": "is",
+              "ipa": "[ˈɪz]"
+            },
+            {
+              "word": "how",
+              "ipa": "[hˈaʊ]"
+            },
+            {
+              "word": "this",
+              "ipa": "[ðˈɪs]"
+            },
+            {
+              "word": "tale",
+              "ipa": "[tˈeɪl]"
+            },
+            {
+              "word": "ends:",
+              "ipa": "[ˈɛndz]"
+            },
+            {
+              "word": "escaping",
+              "ipa": "[ɛskˈeɪpɪŋ]"
+            },
+            {
+              "word": "danger",
+              "ipa": "[dˈeɪndʒə]"
+            },
+            {
+              "word": "does",
+              "ipa": "[dˈʌz]"
+            },
+            {
+              "word": "not",
+              "ipa": "[nˈɒt]"
+            },
+            {
+              "word": "mean",
+              "ipa": "[mˈiːn]"
+            },
+            {
+              "word": "we",
+              "ipa": "[wˈiː]"
+            },
+            {
+              "word": "can",
+              "ipa": "[kˈan]"
+            },
+            {
+              "word": "trust",
+              "ipa": "[tɹˈʌst]"
+            },
+            {
+              "word": "everyone.",
+              "ipa": "[ˈɛvɹɪwˌɒn]"
+            }
+          ]
         },
         "ru": {
           "text": "Так заканчивается сказка: спастись от опасности ещё не значит, что можно доверять каждому.",
           "ipa": "[tˈɑk zakˈɑntʃʲivʌjitsʌ skˈɑska spasʲtʲˈisʲ ot ʌpˈɑsnʌsʲtʲɪ jɪɕˈɵ nʲɪ znˈɑtʃʲit ʃto mˈoʒnʌ dʌvʲirʲˈɑtʲ kˈɑʒdʌmu]",
-          "ipaStatus": "draft"
+          "ipaStatus": "draft",
+          "wordIpa": [
+            {
+              "word": "Так",
+              "ipa": "[tˈɑk]"
+            },
+            {
+              "word": "заканчивается",
+              "ipa": "[zakˈɑntʃʲivʌjitsʌ]"
+            },
+            {
+              "word": "сказка:",
+              "ipa": "[skˈɑska]"
+            },
+            {
+              "word": "спастись",
+              "ipa": "[spasʲtʲˈisʲ]"
+            },
+            {
+              "word": "от",
+              "ipa": "[ˈot]"
+            },
+            {
+              "word": "опасности",
+              "ipa": "[ʌpˈɑsnʌsʲtʲɪ]"
+            },
+            {
+              "word": "ещё",
+              "ipa": "[jɪɕˈɵ]"
+            },
+            {
+              "word": "не",
+              "ipa": "[nʲˈe]"
+            },
+            {
+              "word": "значит,",
+              "ipa": "[znˈɑtʃʲit]"
+            },
+            {
+              "word": "что",
+              "ipa": "[ʃtˈo]"
+            },
+            {
+              "word": "можно",
+              "ipa": "[mˈoʒnʌ]"
+            },
+            {
+              "word": "доверять",
+              "ipa": "[dʌvʲirʲˈɑtʲ]"
+            },
+            {
+              "word": "каждому.",
+              "ipa": "[kˈɑʒdʌmu]"
+            }
+          ]
         }
-      }
+      },
+      "wordIpa": [
+        {
+          "word": "Así",
+          "ipa": "[aˈsi]"
+        },
+        {
+          "word": "termina",
+          "ipa": "[teɾˈmina]"
+        },
+        {
+          "word": "este",
+          "ipa": "[ˈeste]"
+        },
+        {
+          "word": "cuento:",
+          "ipa": "[ˈkwento]"
+        },
+        {
+          "word": "escapar",
+          "ipa": "[eskaˈpaɾ]"
+        },
+        {
+          "word": "de",
+          "ipa": "[ˈde]"
+        },
+        {
+          "word": "un",
+          "ipa": "[ˈun]"
+        },
+        {
+          "word": "peligro",
+          "ipa": "[peˈliɣɾo]"
+        },
+        {
+          "word": "no",
+          "ipa": "[ˈno]"
+        },
+        {
+          "word": "significa",
+          "ipa": "[siɡniˈfika]"
+        },
+        {
+          "word": "que",
+          "ipa": "[ˈke]"
+        },
+        {
+          "word": "podamos",
+          "ipa": "[poˈðamos]"
+        },
+        {
+          "word": "confiar",
+          "ipa": "[konˈfjaɾ]"
+        },
+        {
+          "word": "en",
+          "ipa": "[ˈen]"
+        },
+        {
+          "word": "cualquiera.",
+          "ipa": "[kwalˈkjeɾa]"
+        }
+      ]
     }
   ],
   "columnLanguages": [

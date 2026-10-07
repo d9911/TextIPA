@@ -12,6 +12,7 @@ export const defaultSettings: Settings = {
   headerSticky: true,
   sidebarCollapsed: false,
   showTranslation: false,
+  ipaDisplay: 'above',
 };
 export function preferredLocale(languages: readonly string[]): Language {
   for (const language of languages) {

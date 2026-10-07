@@ -1,0 +1,224 @@
+body .sidebar,
+body.focus-mode .sidebar {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: var(--sidebar-top);
+  align-self: start;
+  height: calc(100dvh - var(--sidebar-top) - 12px);
+  min-height: 0;
+  min-width: 0;
+  padding: 12px;
+  gap: 6px;
+  overflow: hidden auto;
+  border-right: 1px solid var(--line);
+  background: var(--page);
+  z-index: 10;
+}
+.sidebar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  margin-bottom: 4px;
+}
+.sidebar-heading .eyebrow {
+  margin: 0;
+  letter-spacing: 1px;
+}
+.sidebar-heading-label {
+  flex: 1;
+  min-width: 0;
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--muted);
+  cursor: pointer;
+}
+.project-short {
+  display: none;
+}
+.sidebar-collapsed .project-entry .project-lang {
+  display: none;
+}
+.sidebar-collapsed .project-entry .project-short {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+}
+.sidebar .sidebar-action {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  padding: 8px;
+  border-radius: 10px;
+  text-align: left;
+  white-space: normal;
+  flex-shrink: 0;
+}
+.sidebar-symbol {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+}
+.sidebar-symbol svg {
+  display: block;
+}
+.sidebar-label {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.sidebar .sidebar-toggle {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  gap: 0;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  flex: 0 0 28px;
+  padding: 0;
+  border-radius: 50%;
+}
+.sidebar-toggle .sidebar-label {
+  display: none;
+}
+.sidebar-toggle svg {
+  transition: transform 180ms ease;
+}
+.sidebar .project-list {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0;
+  overflow: visible;
+}
+.sidebar .project-entry {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+}
+.sidebar .project-entry:hover {
+  background: var(--panel);
+}
+.sidebar .project-entry.active {
+  background: var(--green-soft);
+  box-shadow: inset 2px 0 var(--green);
+}
+.project-entry strong {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.project-entry small {
+  grid-column: 2;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.project-lang {
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+}
+.sidebar-footer {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 16px;
+}
+body.sidebar-collapsed .sidebar {
+  padding: 12px 8px;
+}
+.sidebar-collapsed .sidebar-heading {
+  justify-content: center;
+}
+.sidebar-collapsed .sidebar-heading .eyebrow,
+.sidebar-collapsed .sidebar-footer,
+.sidebar-collapsed .sidebar-label,
+.sidebar-collapsed .project-entry strong,
+.sidebar-collapsed .project-entry small {
+  display: none;
+}
+.sidebar-collapsed .sidebar-toggle svg {
+  transform: rotate(180deg);
+}
+.sidebar-collapsed .sidebar-action:not(.sidebar-toggle),
+.sidebar-collapsed .project-entry {
+  grid-template-columns: 1fr;
+  place-items: center;
+  align-self: center;
+  justify-self: center;
+  gap: 0;
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+}
+.sidebar-collapsed .project-lang {
+  font-size: 10px;
+}
+@media (max-width: 760px) {
+  body .sidebar {
+    padding: 10px 8px;
+  }
+  .sidebar-heading .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  .sidebar .sidebar-action:not(.sidebar-toggle) {
+    gap: 6px;
+    padding: 8px 6px;
+  }
+  .sidebar-label,
+  .project-entry strong {
+    font-size: 11px;
+  }
+  .sidebar .project-entry {
+    gap: 3px 6px;
+    padding: 9px 7px;
+  }
+  .sidebar-collapsed .sidebar-action:not(.sidebar-toggle),
+  .sidebar-collapsed .project-entry {
+    gap: 0;
+    padding: 0;
+  }
+  .sidebar-footer {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-toggle svg {
+    transition: none;
+  }
+}
+@media print {
+  body .sidebar,
+  body.focus-mode .sidebar {
+    display: none;
+  }
+}

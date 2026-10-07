@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+<title id="title">Text IPA</title><desc id="desc">A multilingual workspace for text, pronunciation and voiceover rehearsal.</desc>
+<rect width="1200" height="280" rx="24" fill="#f2f0eb"/>
+<rect x="40" y="40" width="1120" height="200" rx="20" fill="#1e3932"/>
+<rect x="76" y="82" width="108" height="108" rx="28" fill="#00754a"/>
+<path d="M96 102h12v68H96m68-68h-12v68h12" fill="none" stroke="#d4e9e2" stroke-width="4" stroke-linecap="round"/>
+<path d="M120 156v-24c0-19 26-19 26 0v24m-26-13h26" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+<text x="218" y="132" fill="#fff" font-family="Arial, sans-serif" font-size="58" font-weight="700">Text IPA</text>
+<text x="220" y="174" fill="#d4e9e2" font-family="Arial, sans-serif" font-size="21">Text. Pronunciation. A voice ready to record.</text>
+<rect x="824" y="92" width="94" height="94" rx="47" fill="#d4e9e2"/><text x="871" y="152" text-anchor="middle" fill="#006241" font-family="Arial, sans-serif" font-size="29" font-weight="700">ES</text>
+<rect x="930" y="92" width="94" height="94" rx="47" fill="#fff"/><text x="977" y="152" text-anchor="middle" fill="#006241" font-family="Arial, sans-serif" font-size="29" font-weight="700">EN</text>
+<rect x="1036" y="92" width="94" height="94" rx="47" fill="#edebe9"/><text x="1083" y="152" text-anchor="middle" fill="#006241" font-family="Arial, sans-serif" font-size="29" font-weight="700">RU</text>
+</svg>

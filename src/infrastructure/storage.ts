@@ -2,6 +2,23 @@ import { emptyLibrary } from '../domain/preferences.ts';
 import { validateLibrary } from '../domain/library.ts';
 import type { Library } from '../types/domain.ts';
 export const storageKey = 'espanol-text-ipa:library:v1';
+export const readingPositionKey = 'espanol-text-ipa:reading-position:v1';
+export function loadReadingPosition(storage: StorageLike): URLSearchParams {
+  try {
+    const raw = storage.getItem(readingPositionKey);
+    return new URLSearchParams(raw && raw.length <= 5000 ? raw : '');
+  } catch {
+    return new URLSearchParams();
+  }
+}
+export function saveReadingPosition(storage: StorageLike, position: URLSearchParams): boolean {
+  try {
+    storage.setItem(readingPositionKey, position.toString());
+    return true;
+  } catch {
+    return false;
+  }
+}
 export interface StorageLike {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;

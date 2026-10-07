@@ -1,0 +1,249 @@
+/* A disclosure above the workspace keeps narrow screens available for reading. */
+@media screen and (max-width: 540px) {
+  body .layout,
+  body.focus-mode .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body .sidebar,
+  body.focus-mode .sidebar,
+  body.sidebar-collapsed .sidebar {
+    position: static;
+    height: auto;
+    max-height: 60dvh;
+    padding: 8px 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sidebar-heading,
+  .sidebar-collapsed .sidebar-heading {
+    justify-content: space-between;
+    margin: 0;
+    min-height: 36px;
+  }
+  .sidebar-heading .eyebrow,
+  .sidebar-collapsed .sidebar-heading .eyebrow {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.6px;
+  }
+  .sidebar .sidebar-toggle {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex-basis: 36px;
+  }
+  .sidebar-toggle svg {
+    transform: rotate(90deg);
+  }
+  .sidebar-heading-label {
+    min-height: 36px;
+  }
+  .sidebar-collapsed .sidebar-toggle svg {
+    transform: rotate(-90deg);
+  }
+  .sidebar-collapsed .sidebar > .sidebar-action,
+  .sidebar-collapsed .sidebar > .project-list {
+    display: none;
+  }
+  body .header,
+  body.focus-mode .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .brand {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-right: 48px;
+  }
+  .header-tools {
+    display: contents;
+  }
+  .header-tools .compact-field {
+    max-width: none;
+    grid-row: 2;
+  }
+  .header-tools .settings-trigger {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .header-tools .select-trigger {
+    min-height: 40px;
+    border-radius: 10px;
+  }
+  .header-tools .select-value {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  body .main,
+  body.focus-mode .main {
+    padding: 16px 12px 24px;
+  }
+  .project-heading > div > .eyebrow {
+    display: none;
+  }
+  .project-title {
+    font-size: 22px;
+    text-overflow: ellipsis;
+  }
+  .project-columns-button {
+    display: block;
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+  .project-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px 44px;
+    gap: 8px;
+  }
+  .project-actions > .primary {
+    grid-column: 1 / -1;
+  }
+  .export-menu {
+    min-width: 0;
+  }
+  .export-menu > summary {
+    width: 100%;
+  }
+  .export-options {
+    left: 0;
+    right: auto;
+    min-width: 0;
+    width: calc(100vw - 24px);
+  }
+  .navigation-bar {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .navigation-bar .button {
+    flex: 1;
+    padding: 8px;
+    min-width: 0;
+    white-space: normal;
+  }
+  .navigation-trail {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .draft-note {
+    margin: 12px 0;
+    font-size: 11px;
+  }
+  .reader,
+  .focus-mode .reader {
+    padding: 12px;
+  }
+  .reader-heading {
+    flex-wrap: wrap;
+  }
+  .reader-heading .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.7px;
+  }
+  .reader-controls {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+  .reader-controls > .primary {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .reader-controls > .icon-button:nth-child(3) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .reader-controls > .button:not(.primary) {
+    grid-column: 1 / -1;
+  }
+  .preferences-popover {
+    padding: 12px;
+  }
+  .preference-switch {
+    gap: 10px;
+    font-size: 12px;
+  }
+  .preferences-content .button,
+  .select-option {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .select-option {
+    padding: 10px 8px;
+    gap: 6px;
+  }
+  dialog {
+    width: calc(100vw - 16px);
+  }
+  .dialog-heading,
+  .dialog-body {
+    padding: 16px 12px;
+  }
+  .dialog-heading {
+    gap: 8px;
+  }
+  .dialog-heading h2 {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+  .dialog-body .actions {
+    flex-wrap: wrap;
+  }
+  .dialog-body .actions .button {
+    white-space: normal;
+    flex: 1;
+  }
+  .example-entry {
+    grid-template-columns: minmax(0, 1fr) 18px;
+    padding: 10px;
+    gap: 8px;
+  }
+  .example-entry small {
+    grid-column: 1;
+  }
+  .footer {
+    padding: 20px 12px;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .preferences-heading h2 {
+    font-size: 14px;
+  }
+  .project-title {
+    font-size: 18px;
+  }
+  .project-actions .export-menu > summary {
+    padding: 8px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .reader-text,
+  .reader-language-columns .reader-text,
+  .focus-mode .reader-text,
+  .phrase-word-preview .reader-text {
+    font-size: min(var(--reading-size), 21px);
+  }
+  .reader .reader-ipa,
+  .focus-mode .reader-ipa,
+  .phrase-word-preview .reader-ipa {
+    font-size: min(var(--ipa-size), 22px);
+  }
+  .phrase-row {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px 8px;
+  }
+  .generation-state {
+    padding: 12px;
+  }
+  .generation-state progress {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+}

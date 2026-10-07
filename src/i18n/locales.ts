@@ -1,6 +1,10 @@
 import type { Language } from '../types/domain.ts';
 const en = {
   menuHint: 'Reading preferences and IPA help',
+  ipaDisplay: 'IPA placement',
+  ipaAbove: 'Above each word',
+  ipaLine: 'Separate line',
+  wordIpaMissing: 'Word annotations are missing. Separate IPA is shown; prepare IPA to add annotations.',
   showTranslation: 'Show translation while reading',
   columnSettings: 'Languages and columns',
   columnsHint:
@@ -88,6 +92,12 @@ const en = {
   removeProject: 'Remove script',
   focus: 'Focus mode',
   exitFocus: 'Back to editor',
+  first: 'First phrase of the text',
+  last: 'Last phrase of the text',
+  timerReady: 'Phrase time',
+  timerRemaining: 'Next phrase in',
+  voiceInfo: 'Playback uses a local system voice. No paid API, tokens or account. Availability depends on the browser and installed voices.',
+  focusInfo: 'Show only the reader; hide the editor. Back to editor restores editing.',
   previous: 'Previous phrase',
   next: 'Next phrase',
   start: 'Start rehearsal timer',
@@ -103,7 +113,8 @@ const en = {
   scrollToPhrase: 'Scroll to the phrase when switching',
   speechRate: 'Voice speed',
   pauseScale: 'Pause length',
-  timerNote: 'Timer is a reading guide, not an audio timecode. Space: start/pause; ←/→: change phrase.',
+  timerNote:
+    'The timer advances automatically at the selected reading pace, including the pause after each phrase. It does not play audio. Space: start/pause; ←/→: change phrase.',
   guide: 'IPA guide',
   guideTitle: 'Read the sounds, then the phrase',
   guideHint: 'Broad learning transcription. It does not analyse your recorded voice.',
@@ -146,6 +157,10 @@ const en = {
 export type Copy = { [K in keyof typeof en]: string };
 const ru: Copy = {
   menuHint: 'Настройки чтения и справка IPA',
+  ipaDisplay: 'Расположение IPA',
+  ipaAbove: 'Над каждым словом',
+  ipaLine: 'Отдельной строкой',
+  wordIpaMissing: 'Нет разметки по словам. Показана строка IPA; нажмите «Подготовить IPA» для разметки.',
   showTranslation: 'Показывать перевод при чтении',
   columnSettings: 'Языки и колонки',
   columnsHint:
@@ -233,6 +248,12 @@ const ru: Copy = {
   removeProject: 'Убрать текст',
   focus: 'Режим чтения',
   exitFocus: 'Вернуться к редактору',
+  first: 'В начало текста',
+  last: 'В конец текста',
+  timerReady: 'Время на фразу',
+  timerRemaining: 'Следующая фраза через',
+  voiceInfo: 'Озвучка локальным голосом системы. Без платного API, токенов и аккаунта. Доступность зависит от браузера и установленных голосов.',
+  focusInfo: 'Оставить только читалку и скрыть редактор. «Вернуться к редактированию» возвращает редактор.',
   previous: 'Предыдущая фраза',
   next: 'Следующая фраза',
   start: 'Запустить таймер репетиции',
@@ -248,7 +269,8 @@ const ru: Copy = {
   scrollToPhrase: 'Прокручивать к фразе при переключении',
   speechRate: 'Скорость голоса',
   pauseScale: 'Длина пауз',
-  timerNote: 'Таймер — ориентир для чтения, не таймкод аудио. Пробел: старт/пауза; ←/→: перейти к фразе.',
+  timerNote:
+    'Таймер переключает фразы по выбранному темпу, включая паузу после каждой фразы. Звук он не воспроизводит. Пробел: старт/пауза; ←/→: перейти к фразе.',
   guide: 'Как читать IPA',
   guideTitle: 'Сначала звук, затем фраза',
   guideHint: 'Широкая учебная транскрипция. Вашу аудиозапись она не анализирует.',
@@ -290,6 +312,10 @@ const ru: Copy = {
 };
 const es: Copy = {
   menuHint: 'Preferencias de lectura y ayuda IPA',
+  ipaDisplay: 'Posición de IPA',
+  ipaAbove: 'Sobre cada palabra',
+  ipaLine: 'En una línea separada',
+  wordIpaMissing: 'Faltan anotaciones por palabra. Se muestra IPA separada; prepara IPA para añadirlas.',
   showTranslation: 'Mostrar traducción al leer',
   columnSettings: 'Idiomas y columnas',
   columnsHint:
@@ -377,6 +403,12 @@ const es: Copy = {
   removeProject: 'Quitar guion',
   focus: 'Modo de lectura',
   exitFocus: 'Volver al editor',
+  first: 'Primera frase del texto',
+  last: 'Última frase del texto',
+  timerReady: 'Tiempo de la frase',
+  timerRemaining: 'Siguiente frase en',
+  voiceInfo: 'La reproducción usa una voz local del sistema. Sin API de pago, tokens ni cuenta. Depende del navegador y las voces instaladas.',
+  focusInfo: 'Mostrar solo el lector y ocultar el editor. Volver al editor restaura la edición.',
   previous: 'Frase anterior',
   next: 'Frase siguiente',
   start: 'Iniciar temporizador de ensayo',
@@ -392,7 +424,7 @@ const es: Copy = {
   scrollToPhrase: 'Desplazar hasta la frase al cambiar',
   speechRate: 'Velocidad de voz',
   pauseScale: 'Duración de pausas',
-  timerNote: 'El temporizador es una guía, no un código de tiempo de audio. Espacio: iniciar/pausar; ←/→: cambiar frase.',
+  timerNote: 'El temporizador avanza según el ritmo elegido, incluida la pausa de cada frase. No reproduce audio. Espacio: iniciar/pausar; ←/→: cambiar frase.',
   guide: 'Guía de IPA',
   guideTitle: 'Primero el sonido, después la frase',
   guideHint: 'Transcripción amplia de aprendizaje. No analiza tu grabación.',

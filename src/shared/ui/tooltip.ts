@@ -3,7 +3,7 @@ import { element } from './dom.ts';
 let dismiss: (() => void) | undefined;
 let listening = false;
 
-export function tooltip(control: HTMLElement, owner: HTMLElement): void {
+export function tooltip(control: HTMLElement, owner: HTMLElement, options: { text?: string; placement?: 'below' } = {}): void {
   if (!listening) {
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') dismiss?.();
@@ -22,21 +22,22 @@ export function tooltip(control: HTMLElement, owner: HTMLElement): void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const hide = () => {
     clearTimeout(timer);
-    tip.hidePopover();
+    if (tip.isConnected) tip.hidePopover();
     if (dismiss === hide) dismiss = undefined;
   };
   const show = () => {
     clearTimeout(timer);
     if (dismiss !== hide) dismiss?.();
     dismiss = hide;
-    tip.textContent = control.getAttribute('aria-label') ?? control.textContent;
+    tip.textContent = options.text ?? control.getAttribute('aria-label') ?? control.textContent;
     tip.showPopover();
     const box = control.getBoundingClientRect();
     const width = tip.offsetWidth;
     const height = tip.offsetHeight;
-    const left = Math.max(box.right + 10, owner.getBoundingClientRect().right + 8);
+    const left = options.placement === 'below' ? box.left + (box.width - width) / 2 : Math.max(box.right + 10, owner.getBoundingClientRect().right + 8);
     tip.style.left = Math.max(8, Math.min(left, innerWidth - width - 8)) + 'px';
-    tip.style.top = Math.max(8, Math.min(box.top + (box.height - height) / 2, innerHeight - height - 8)) + 'px';
+    const top = options.placement === 'below' ? box.bottom + 8 : box.top + (box.height - height) / 2;
+    tip.style.top = Math.max(8, Math.min(top, innerHeight - height - 8)) + 'px';
   };
   const later = () => {
     timer = setTimeout(() => {

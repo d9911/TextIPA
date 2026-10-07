@@ -1,2 +1,0 @@
-Source reference: /Users/d9911/JS/training/gitHub/FocusWord. Reused architectural conventions (TypeScript, Vite, Node 24, Make, 3 UI languages, local storage), not its reading engine.
-The optional cable example preserves all 205 rows from ../cable/transcripts/rehearsal/segments_ipa.json on 2026-10-07. Source IPA is a pedagogical draft, not verified audio transcription. Original source files are unchanged.

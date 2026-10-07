@@ -1,10 +1,15 @@
 export type Language = 'ru' | 'en' | 'es';
 export type Dialect = 'es-ES' | 'es-419' | 'en-GB' | 'en-US' | 'ru-RU';
 export type IpaStatus = 'empty' | 'draft' | 'reviewed';
+export interface WordIpa {
+  word: string;
+  ipa: string;
+}
 export interface PhraseVersion {
   text: string;
   ipa: string;
   ipaStatus: IpaStatus;
+  wordIpa?: WordIpa[];
 }
 export interface Phrase {
   id: string;
@@ -17,6 +22,7 @@ export interface Phrase {
   note: string;
   translation?: string;
   translations?: Record<string, PhraseVersion>;
+  wordIpa?: WordIpa[];
 }
 export interface Project {
   id: string;
@@ -40,6 +46,7 @@ export interface Settings {
   headerSticky: boolean;
   sidebarCollapsed: boolean;
   showTranslation: boolean;
+  ipaDisplay: 'line' | 'above';
 }
 export interface Library {
   schemaVersion: 1;

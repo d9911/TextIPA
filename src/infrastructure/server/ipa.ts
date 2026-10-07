@@ -26,7 +26,8 @@ export function runEspeak(args: string[], text = ''): Promise<string> {
     child.stdin.on('error', () => {});
     child.on('error', () => finish(new Error('ENGINE_MISSING')));
     child.on('close', (code) => finish(code === 0 ? undefined : new Error('ENGINE_FAILED')));
-    child.stdin.end(text);
+    // eSpeak's stdin reader needs a final line terminator, including for a single word.
+    child.stdin.end(text.endsWith('\n') ? text : text + '\n');
   });
 }
 function spanishToken(token: string): string {

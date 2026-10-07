@@ -8,11 +8,13 @@ import { applyShellSettings, watchHeader } from './shell.ts';
 import { showExamples } from '../features/library/examples-dialog.ts';
 import '../styles/index.css';
 import '../styles/shell.css';
+import '../styles/sidebar.css';
 import '../styles/pronunciation.css';
+import '../styles/responsive.css';
 import { setupPwa } from '../infrastructure/pwa.ts';
 import { localVoice } from '../features/playback/voice.ts';
 import { resizePhraseFields } from '../widgets/editor/layout.ts';
-import { matchingPhrases, NavigationHistory, navigationUrl, resolveNavigation } from './navigation.ts';
+import { matchingPhrases, NavigationHistory, navigationUrl, resolveNavigation, initialNavigation } from './navigation.ts';
 import type { NavigationState } from './navigation.ts';
 import type { HealthResponse, IpaRequest, IpaResponse } from '../types/api.ts';
 import { showPronunciationGuide } from '../features/pronunciation/dialog.ts';
@@ -20,9 +22,13 @@ import { button, dialog as createDialog, element, labelled, select } from '../sh
 import type { Dialect, Language, Library, Phrase, Project, Settings } from '../types/domain.ts';
 import { locales, languageNames } from '../i18n/locales.ts';
 import { decodeImport, durationMs, mergeProjects, fingerprint, projectFromText, validateLibrary } from '../domain/library.ts';
-import { loadLibrary, saveLibrary } from '../infrastructure/storage.ts';
+import { loadLibrary, saveLibrary, storageKey, loadReadingPosition, saveReadingPosition } from '../infrastructure/storage.ts';
+import { bundledExample } from '../infrastructure/example.ts';
+import { restoreExamplePronunciation } from '../domain/example-pronunciation.ts';
 import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVersion } from '../domain/columns.ts';
 import { dialects } from '../domain/preferences.ts';
+import { ipaWords, validWordIpa, displayWordIpa } from '../domain/word-ipa.ts';
+import { requestWordAnnotations } from '../features/pronunciation/word-annotations.ts';
 import { columnSettings } from '../features/preferences/columns-dialog.ts';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -33,7 +39,23 @@ const browserStorage = {
 const loaded = loadLibrary(browserStorage, navigator.languages);
 let library: Library = loaded.library;
 let storageFailed = loaded.error;
-let message = loaded.error ? locales[library.settings.locale].corrupt : '';
+if (!loaded.error) {
+  let changed = false;
+  const requested = new URL(window.location.href).searchParams.get('project');
+  const firstVisit = browserStorage.getItem(storageKey) === null;
+  if (
+    (firstVisit || requested === bundledExample.id) &&
+    library.projects.length < 300 &&
+    !library.projects.some((project) => project.id === bundledExample.id)
+  ) {
+    library.projects.push(structuredClone(bundledExample));
+    library.activeId ??= bundledExample.id;
+    changed = true;
+  }
+  for (const project of library.projects) changed = restoreExamplePronunciation(project, bundledExample) || changed;
+  if (changed) storageFailed = !saveLibrary(browserStorage, library);
+}
+let message = loaded.error ? locales[library.settings.locale].corrupt : storageFailed ? locales[library.settings.locale].storageError : '';
 let engineAvailable = false;
 let engineChecking = true;
 let generatedCount = 0;
@@ -45,8 +67,14 @@ let search = '';
 let focusMode = false;
 let playing = false;
 let timer: ReturnType<typeof setTimeout> | undefined;
+let timerTick: ReturnType<typeof setInterval> | undefined;
+let timerDeadline = 0;
+let timerTotal = 0;
 let voiceSpeaking = false;
 const editHistory: string[] = [];
+const annotationPending = new Set<string>();
+const annotationFailed = new Set<string>();
+let annotationQueue = Promise.resolve();
 const navigation = new NavigationHistory(window);
 let rowsHost: HTMLElement | null = null;
 const t = () => locales[library.settings.locale];
@@ -60,7 +88,7 @@ function notify(text: string): void {
   message = text;
   const n = document.querySelector('#notice');
   if (n) {
-    n.textContent = text;
+    n.querySelector('.notice-message')!.textContent = text;
     n.toggleAttribute('hidden', !text);
   }
 }
@@ -98,12 +126,14 @@ function errorMessage(error: unknown): string {
 }
 function stop(): void {
   clearTimeout(timer);
+  clearInterval(timerTick);
+  timerDeadline = 0;
   playing = false;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   voiceSpeaking = false;
 }
 function navigationState(): NavigationState {
-  return { projectId: library.activeId, block: selectedBlock, phraseId: focusedId, query: search, focus: focusMode };
+  return { projectId: library.activeId, block: selectedBlock, phraseId: focusedId, query: search, focus: focusMode, ipaDisplay: library.settings.ipaDisplay };
 }
 function syncNavigation(mode: 'push' | 'replace' = 'replace'): void {
   if (!search && selectedBlock && focused() && focused()!.block !== selectedBlock) {
@@ -112,16 +142,28 @@ function syncNavigation(mode: 'push' | 'replace' = 'replace'): void {
     if (blocks) blocks.value = selectedBlock;
   }
   navigation.write(navigationUrl(new URL(window.location.href), navigationState()), mode);
+  if (!loaded.error) {
+    const position = new URL(navigationUrl(new URL(window.location.origin), navigationState()), window.location.origin).searchParams;
+    if (!saveReadingPosition(browserStorage, position) || !saveLibrary(browserStorage, library)) {
+      storageFailed = true;
+      notify(t().storageError);
+    }
+  }
   updateNavigationControls();
 }
-function restoreNavigation(): void {
+function restoreNavigation(initial = false): void {
   stop();
-  const result = resolveNavigation(new URL(window.location.href).searchParams, library);
+  const params = new URL(window.location.href).searchParams;
+  const result = resolveNavigation(initial ? initialNavigation(params, loadReadingPosition(browserStorage)) : params, library);
   library.activeId = result.state.projectId;
   selectedBlock = result.state.block;
   focusedId = result.state.phraseId;
   search = result.state.query;
   focusMode = result.state.focus;
+  if (result.state.ipaDisplay !== library.settings.ipaDisplay) {
+    library.settings.ipaDisplay = result.state.ipaDisplay!;
+    storageFailed = !saveLibrary(browserStorage, library);
+  }
   if (result.corrected) message = t().linkAdjusted;
   syncNavigation();
 }
@@ -362,9 +404,26 @@ function highlightRows(scroll = true): void {
 }
 function schedule(): void {
   clearTimeout(timer);
+  clearInterval(timerTick);
   const q = focused();
   if (!q || !playing) return;
-  timer = setTimeout(() => move(1), durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier));
+  timerTotal = durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier);
+  timerDeadline = performance.now() + timerTotal;
+  timer = setTimeout(() => move(1), timerTotal);
+  timerTick = setInterval(updateTimerDisplay, 100);
+  updateTimerDisplay();
+}
+function updateTimerDisplay(): void {
+  const remaining = Math.max(0, timerDeadline - performance.now());
+  const label = document.querySelector('#timer-countdown');
+  const progress = document.querySelector<HTMLProgressElement>('#timer-progress');
+  if (label && playing) label.textContent = (remaining / 1000).toFixed(1) + ' ' + t().seconds;
+  if (progress && playing) progress.value = Math.max(0, timerTotal - remaining);
+}
+function jump(edge: 'first' | 'last'): void {
+  const rows = visiblePhrases();
+  const at = rows.findIndex((q) => q.id === focusedId);
+  move((edge === 'first' ? 0 : rows.length - 1) - at);
 }
 function toggleTimer(): void {
   if (playing) stop();
@@ -411,6 +470,8 @@ function listen(): void {
 function renderReader(): void {
   const host = document.querySelector('#reader');
   if (!host) return;
+  const active = document.activeElement;
+  const controlLabel = active instanceof HTMLButtonElement && host.contains(active) ? active.getAttribute('aria-label') : null;
   host.replaceChildren();
   const q = focused();
   const p = current();
@@ -420,11 +481,15 @@ function renderReader(): void {
     phrase: q,
     copy: t(),
     playing,
+    timerTotal: playing ? timerTotal : durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier),
+    timerRemaining: playing ? Math.max(0, timerDeadline - performance.now()) : undefined,
     voiceSpeaking,
     focusMode,
     showTranslation: library.settings.showTranslation,
     locale: library.settings.locale,
+    ipaDisplay: library.settings.ipaDisplay,
     move,
+    jump,
     timer: toggleTimer,
     listen: () => {
       if (voiceSpeaking) {
@@ -438,49 +503,111 @@ function renderReader(): void {
       render();
     },
   });
+  if (controlLabel) {
+    const control = Array.from(host.querySelectorAll('button')).find((button) => button.getAttribute('aria-label') === controlLabel);
+    control?.focus({ preventScroll: true });
+  }
+  prepareFocusedAnnotations(p, q);
+}
+function prepareFocusedAnnotations(project: Project, phrase: Phrase): void {
+  if (library.settings.ipaDisplay !== 'above' || !engineAvailable || busy) return;
+  const columns = library.settings.showTranslation ? projectColumns(project) : [project.language];
+  for (const code of columns) {
+    if (!engineLanguage(code)) continue;
+    const version = phraseVersion(project, phrase, code);
+    if (!version.ipa.trim() || displayWordIpa(version)) continue;
+    const dialect = (code === project.language ? project.dialect : dialects[code][0]!) as Dialect;
+    const snapshot = { text: version.text, ipa: version.ipa, ipaStatus: version.ipaStatus };
+    const key = JSON.stringify([project.id, phrase.id, code, dialect, snapshot]);
+    if (annotationPending.has(key) || annotationFailed.has(key)) continue;
+    annotationPending.add(key);
+    annotationQueue = annotationQueue.then(async () => {
+      try {
+        if (busy || current() !== project || focused() !== phrase || library.settings.ipaDisplay !== 'above') return;
+        const wordIpa = await requestWordAnnotations(snapshot.text, code, dialect);
+        const live = phraseVersion(project, phrase, code);
+        if (busy || current() !== project || focused() !== phrase || (project.dialect !== dialect && code === project.language)) return;
+        if (live.text !== snapshot.text || live.ipa !== snapshot.ipa || live.ipaStatus !== snapshot.ipaStatus) return;
+        editableVersion(project, phrase, code).wordIpa = wordIpa;
+        persist();
+        renderReader();
+      } catch {
+        annotationFailed.add(key);
+      } finally {
+        annotationPending.delete(key);
+      }
+    });
+  }
 }
 async function generate(): Promise<void> {
   const p = current();
   if (!p || busy) return;
-  const codes = projectColumns(p).filter(engineLanguage);
-  const tasks = codes.map((code) => ({
-    code,
-    dialect: (code === p.language ? p.dialect : dialects[code][0]!) as Dialect,
-    rows: p.phrases
-      .filter((q) => {
-        const v = phraseVersion(p, q, code);
-        return v.ipaStatus !== 'reviewed' && v.text.trim();
-      })
-      .map((q) => ({ id: q.id, text: phraseVersion(p, q, code).text })),
-  }));
+  const tasks = projectColumns(p)
+    .filter(engineLanguage)
+    .map((code) => {
+      const rows = p.phrases
+        .filter((q) => {
+          const version = phraseVersion(p, q, code);
+          return version.text.trim() && (version.ipaStatus !== 'reviewed' || !validWordIpa(version));
+        })
+        .map((q) => ({ id: q.id, version: phraseVersion(p, q, code) }));
+      return {
+        code,
+        dialect: (code === p.language ? p.dialect : dialects[code][0]!) as Dialect,
+        rows,
+        words: [...new Set(rows.flatMap((row) => ipaWords(row.version.text)))],
+      };
+    });
   if (!tasks.some((task) => task.rows.length)) return;
   stop();
   const snapshot = structuredClone(p);
   busy = true;
   generatedCount = 0;
-  generationTotal = tasks.reduce((count, task) => count + task.rows.length, 0);
+  generationTotal = tasks.reduce((count, task) => count + task.rows.filter((row) => row.version.ipaStatus !== 'reviewed').length + task.words.length, 0);
   render();
   try {
-    const results: { id: string; code: string; ipa: string }[] = [];
-    for (const task of tasks) {
-      for (let at = 0; at < task.rows.length; at += 40) {
-        const rows = task.rows.slice(at, at + 40);
+    const request = async (texts: string[], language: Language, dialect: Dialect): Promise<string[]> => {
+      const result: string[] = [];
+      for (let at = 0; at < texts.length; at += 40) {
+        const batch = texts.slice(at, at + 40);
         const res = await fetch('/api/ipa', {
           signal: AbortSignal.timeout(45000),
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ texts: rows.map((q) => q.text), language: task.code, dialect: task.dialect } satisfies IpaRequest),
+          body: JSON.stringify({ texts: batch, language, dialect } satisfies IpaRequest),
         });
         const data = (await res.json()) as IpaResponse;
         if (!res.ok) throw new Error(data.error ?? 'ENGINE_FAILED');
-        if (!Array.isArray(data.ipa) || data.ipa.length !== rows.length || data.ipa.some((x) => typeof x !== 'string')) throw new Error('ENGINE_FAILED');
-        rows.forEach((row, i) => results.push({ id: row.id, code: task.code, ipa: data.ipa![i]! }));
-        generatedCount = results.length;
+        if (!Array.isArray(data.ipa) || data.ipa.length !== batch.length || data.ipa.some((value) => typeof value !== 'string'))
+          throw new Error('ENGINE_FAILED');
+        result.push(...data.ipa);
+        generatedCount += batch.length;
         const progress = document.querySelector<HTMLProgressElement>('#generation-progress');
         if (progress) progress.value = generatedCount;
         const label = document.querySelector('#generation-label');
         if (label) label.textContent = t().generating + ' ' + generatedCount + '/' + generationTotal;
       }
+      return result;
+    };
+    const results: { id: string; code: string; ipa: string; reviewed: boolean; wordIpa: NonNullable<Phrase['wordIpa']> }[] = [];
+    for (const task of tasks) {
+      const drafts = task.rows.filter((row) => row.version.ipaStatus !== 'reviewed');
+      const sentenceIpa = await request(
+        drafts.map((row) => row.version.text),
+        task.code,
+        task.dialect,
+      );
+      const sentences = new Map(drafts.map((row, index) => [row.id, sentenceIpa[index]!]));
+      const wordIpa = await request(task.words, task.code, task.dialect);
+      const words = new Map(task.words.map((word, index) => [word, wordIpa[index]!]));
+      for (const row of task.rows)
+        results.push({
+          id: row.id,
+          code: task.code,
+          ipa: sentences.get(row.id) ?? row.version.ipa,
+          reviewed: row.version.ipaStatus === 'reviewed',
+          wordIpa: ipaWords(row.version.text).map((word) => ({ word, ipa: words.get(word)! })),
+        });
     }
     const live = library.projects.find((q) => q.id === snapshot.id);
     if (!live || JSON.stringify(live) !== JSON.stringify(snapshot)) throw new Error('STALE');
@@ -489,7 +616,8 @@ async function generate(): Promise<void> {
       const phrase = live.phrases.find((q) => q.id === result.id)!;
       const version = editableVersion(live, phrase, result.code);
       version.ipa = result.ipa;
-      version.ipaStatus = 'draft';
+      version.ipaStatus = result.reviewed ? 'reviewed' : 'draft';
+      version.wordIpa = result.wordIpa;
     }
     persist();
     notify(t().ready);
@@ -523,6 +651,8 @@ function renderRows(): void {
     focused: () => focusedId,
     showTranslation: library.settings.showTranslation,
     locale: library.settings.locale,
+    ipaDisplay: library.settings.ipaDisplay,
+    focusMode,
     busy,
     copy: t(),
     checkpoint,
@@ -583,14 +713,24 @@ function render(): void {
       applyShellSettings(library.settings, t());
       if (key === 'showTranslation') renderRows();
     },
+    display: (value) => {
+      annotationFailed.clear();
+      library.settings.ipaDisplay = value;
+      persist();
+      syncNavigation('push');
+      renderRows();
+    },
     guide: showGuide,
   });
   app.append(header);
-  const notice = element('div', 'notice', message);
+  const notice = element('div', 'notice');
+  notice.append(
+    element('span', 'notice-message', message),
+    button('×', () => notify(''), 'notice-close', copy.close),
+  );
   notice.id = 'notice';
   notice.setAttribute('role', 'status');
   notice.hidden = !message;
-  app.append(notice);
   const layout = element('div', 'layout');
   const sidebar = sidebarView({
     library,
@@ -662,7 +802,9 @@ function render(): void {
       p.phrases.forEach((q) => {
         q.ipa = '';
         q.ipaStatus = 'empty';
+        delete q.wordIpa;
       });
+      restoreExamplePronunciation(p, bundledExample);
       persist();
       render();
     },
@@ -711,6 +853,7 @@ function render(): void {
   });
   rowsHost = workspace.rows;
   const main = workspace.main;
+  main.prepend(notice);
   layout.append(sidebar, main);
   app.append(layout);
   app.append(footerView(copy, storageFailed, showGuide));
@@ -760,7 +903,7 @@ window.addEventListener('popstate', (event) => {
   restoreNavigation();
   render();
 });
-restoreNavigation();
+restoreNavigation(true);
 render();
 setupPwa(() => library.settings.locale, notify);
 void fetch('/api/health', { signal: AbortSignal.timeout(10000) })
