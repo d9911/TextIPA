@@ -1,5 +1,5 @@
 import type { PhraseVersion, Project } from '../types/domain.ts';
-import { phraseVersion, projectColumns } from './columns.ts';
+import { phraseVersion, projectColumns, pronunciationDialect } from './columns.ts';
 import { validWordIpa } from './word-ipa.ts';
 
 /** Fill missing draft data only for unchanged versions of the bundled example. */
@@ -29,6 +29,7 @@ export function restoreExamplePronunciation(project: Project, example: Project):
       : source;
     fill(phrase, pronunciation);
     for (const code of projectColumns(example)) {
+      if (code !== project.language && pronunciationDialect(project, code) !== pronunciationDialect(example, code)) continue;
       const version = phrase.translations?.[code];
       if (version) fill(version, phraseVersion(example, source, code));
     }

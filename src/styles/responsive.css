@@ -9,6 +9,8 @@
   body.sidebar-collapsed .sidebar {
     position: static;
     height: auto;
+    interpolate-size: allow-keywords;
+    transition: height 360ms cubic-bezier(0.22, 1, 0.36, 1);
     max-height: 60dvh;
     padding: 8px 12px;
     border-right: 0;
@@ -45,6 +47,13 @@
   .sidebar-collapsed .sidebar > .sidebar-action,
   .sidebar-collapsed .sidebar > .project-list {
     display: none;
+  }
+  body.sidebar-collapsed .sidebar {
+    height: 52px;
+  }
+  body:not(.sidebar-collapsed) .sidebar > .sidebar-action,
+  body:not(.sidebar-collapsed) .sidebar > .project-list {
+    animation: sidebar-reveal 320ms ease-out;
   }
   body .header,
   body.focus-mode .header {

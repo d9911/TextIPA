@@ -25,6 +25,8 @@ export interface Phrase {
   wordIpa?: WordIpa[];
 }
 export interface Project {
+  readingLanguage?: string;
+  pronunciations?: Record<string, string>;
   id: string;
   title: string;
   language: string;

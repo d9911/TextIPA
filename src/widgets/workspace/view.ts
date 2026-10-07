@@ -1,9 +1,10 @@
 import type { Project, Library, Dialect } from '../../types/domain.ts';
 import type { Copy } from '../../i18n/locales.ts';
 import { dialects } from '../../domain/preferences.ts';
-import { engineLanguage, projectColumns } from '../../domain/columns.ts';
+import { engineLanguage, projectColumns, readingLanguage, pronunciationDialect, languageLabel } from '../../domain/columns.ts';
 import { exportMarkdown } from '../../domain/library.ts';
 import { button, element, labelled, select } from '../../shared/ui/controls.ts';
+import { tooltip } from '../../shared/ui/tooltip.ts';
 interface WorkspaceOptions {
   project: Project | undefined;
   library: Library;
@@ -24,6 +25,7 @@ interface WorkspaceOptions {
   undo: () => void;
   remove: () => void;
   dialect: (value: Dialect) => void;
+  readingLanguage: (value: string) => void;
   dialectLabel: (value: Dialect) => string;
   range: (label: string, key: 'fontSize' | 'ipaFontSize' | 'wpm' | 'rate' | 'pauseMultiplier', min: number, max: number, step: number) => HTMLElement;
   download: (name: string, content: string, mime: string) => void;
@@ -35,6 +37,7 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
   const { copy, busy, library, download } = options;
   let rows: HTMLElement | null = null;
   const main = element('main', 'main');
+  const hint = (control: HTMLElement, text: string) => tooltip(control, main, { text, placement: 'below' });
   const p = options.project;
   const address = element('nav', 'navigation-bar');
   address.setAttribute('aria-label', copy.navigation);
@@ -56,6 +59,11 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
       button(copy.new, options.create, 'button primary'),
     );
     main.append(empty);
+    if (options.canUndo) {
+      const undo = button('↶ ' + copy.undo, options.undo, 'button', copy.undo);
+      empty.append(undo);
+      hint(undo, copy.undoHint);
+    }
     rows = null;
   } else {
     const heading = element('div', 'project-heading');
@@ -100,12 +108,18 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
     );
     exports.append(summary, menu);
     exports.title = copy.exportHint;
-    const undoButton = button('↶', options.undo, 'icon-button', copy.undo);
+    const undoButton = button('↶ ' + copy.undo, options.undo, 'button undo-action', copy.undo);
     undoButton.id = 'undo-button';
     undoButton.disabled = busy || !options.canUndo;
     const remove = button('×', options.remove, 'icon-button', copy.removeProject);
     remove.disabled = busy;
     actions.append(gen, exports, undoButton, remove);
+    hint(undoButton, copy.undoHint);
+    hint(remove, copy.removeProjectHint);
+    hint(gen, projectColumns(p).some(engineLanguage) ? copy.generateHint : copy.manualIpa);
+    hint(summary, copy.exportHint);
+    exports.removeAttribute('title');
+    hint(columnButton, copy.columnsHint);
     heading.append(headingText, actions);
     main.append(heading, element('p', 'draft-note', copy.draftNote));
     if (busy) {
@@ -125,14 +139,22 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
     settings.open = false;
     settings.append(element('summary', '', copy.pace + ' / ' + copy.font));
     const settingsGrid = element('div', 'settings-grid');
+    const code = readingLanguage(p);
+    const language = select(
+      projectColumns(p).map((code): [string, string] => [code, languageLabel(code, library.settings.locale)]),
+      code,
+      options.readingLanguage,
+    );
+    language.disabled = busy;
     const pronunciation = select(
-      (engineLanguage(p.language) ? dialects[p.language] : [p.dialect]).map((d): [string, string] => [d, options.dialectLabel(d as Dialect)]),
-      p.dialect,
+      (engineLanguage(code) ? dialects[code] : [pronunciationDialect(p, code)]).map((d): [string, string] => [d, options.dialectLabel(d as Dialect)]),
+      pronunciationDialect(p, code),
       (value) => options.dialect(value as Dialect),
     );
     pronunciation.title = copy.dialectHint;
     pronunciation.disabled = busy;
     settingsGrid.append(
+      labelled(copy.readingLanguage, language),
       labelled(copy.dialect, pronunciation),
       options.range(copy.font, 'fontSize', 18, 40, 1),
       options.range(copy.ipaFont, 'ipaFontSize', 18, 48, 1),
@@ -142,6 +164,13 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
     );
     settings.append(settingsGrid);
     main.append(settings);
+    hint(settings.querySelector('summary')!, copy.settingsHint);
+    hint(language.querySelector('.select-trigger')!, copy.readingLanguageHint);
+    hint(pronunciation.querySelector('.select-trigger')!, copy.dialectHint);
+    for (const [control, text] of [...settingsGrid.querySelectorAll<HTMLElement>('input[type="range"]')].map(
+      (control, index) => [control, [copy.fontHint, copy.ipaFontHint, copy.paceHint, copy.speechRateHint, copy.pauseScaleHint][index]!] as const,
+    ))
+      hint(control, text);
     const reader = element('section', 'reader');
     reader.id = 'reader';
     reader.setAttribute('aria-label', copy.focus);
@@ -179,6 +208,10 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
     main.append(columns);
     rows = element('section', 'phrases');
     main.append(rows);
+  }
+  for (const control of main.querySelectorAll<HTMLElement>('button, .select-trigger')) {
+    if (!control.hasAttribute('aria-describedby') && !control.closest('.export-options'))
+      hint(control, control.getAttribute('aria-label') ?? control.textContent ?? '');
   }
 
   return { main, rows };

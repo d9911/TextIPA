@@ -5,7 +5,7 @@ export function footerView(copy: Copy, failed: boolean, guide: () => void): HTML
   const status = element('span', failed ? 'failure' : '', failed ? copy.unsaved : copy.saved);
   status.id = 'save-status';
   const brand = element('div', 'footer-brand');
-  brand.append(element('strong', '', 'Text IPA'), element('span', '', copy.about));
+  brand.append(element('strong', '', 'Text IPA'), element('span', '', copy.about), element('small', 'copyright', '© 2026 Denis Gutsuliak · d9911.org'));
   const tools = element('div', 'footer-tools');
   const license = element('a', 'text-link', copy.license);
   license.href = '/LICENSE';

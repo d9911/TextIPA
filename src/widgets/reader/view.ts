@@ -1,7 +1,7 @@
 import type { Project, Phrase } from '../../types/domain.ts';
 import type { Copy } from '../../i18n/locales.ts';
 import { button, element } from '../../shared/ui/controls.ts';
-import { projectColumns, phraseVersion, languageLabel } from '../../domain/columns.ts';
+import { projectColumns, phraseVersion, languageLabel, readingLanguage } from '../../domain/columns.ts';
 import type { Language } from '../../types/domain.ts';
 import type { Settings } from '../../types/domain.ts';
 import { pronunciationText } from '../../features/pronunciation/annotated-text.ts';
@@ -27,13 +27,16 @@ interface ReaderOptions {
 export function readerView(host: Element, options: ReaderOptions): void {
   const { project: p, phrase: q, copy, playing, voiceSpeaking, focusMode } = options;
   const number = p.phrases.indexOf(q) + 1;
+  const selectedLanguage = readingLanguage(p);
   const heading = element('div', 'reader-heading');
   heading.append(
     element('span', 'eyebrow', copy.selected + ' · ' + String(number).padStart(2, '0') + '/' + p.phrases.length),
     element('span', 'pause-badge', q.pauseMs / 1000 + ' ' + copy.seconds),
   );
+  heading.append(element('span', 'reader-current-language', copy.readingLanguage + ': ' + languageLabel(selectedLanguage, options.locale)));
+  heading.querySelector('.pause-badge')?.setAttribute('aria-label', copy.pauses + ': ' + q.pauseMs / 1000 + ' ' + copy.seconds);
   const content = element('div', 'reader-content');
-  if (p.columnLanguages && options.showTranslation) {
+  if (projectColumns(p).length > 1 && options.showTranslation) {
     const columns = projectColumns(p);
     content.classList.add('reader-language-columns');
     content.style.setProperty('--language-columns', String(columns.length));
@@ -44,7 +47,7 @@ export function readerView(host: Element, options: ReaderOptions): void {
       content.append(column);
     }
   } else {
-    content.append(...pronunciationText(q, p.language, options.ipaDisplay, copy));
+    content.append(...pronunciationText(phraseVersion(p, q, selectedLanguage), selectedLanguage, options.ipaDisplay, copy));
     if (options.showTranslation) {
       const translation = element('div', 'reader-translation');
       translation.append(element('span', 'eyebrow', copy.translation));

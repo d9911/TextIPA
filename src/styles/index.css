@@ -271,7 +271,7 @@ progress::-webkit-progress-value {
 .settings {
   border-bottom: 1px solid var(--line);
   padding: 0 0 16px;
-  margin-bottom: 22px;
+  margin: 28px 0 22px;
 }
 .settings > summary {
   font-size: 12px;
@@ -521,35 +521,6 @@ progress::-webkit-progress-value {
 .error {
   color: var(--danger);
 }
-.notice {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  margin: 0 0 16px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface);
-  font-size: 12px;
-  line-height: 1.5;
-}
-.notice-close {
-  display: grid;
-  place-items: center;
-  flex: 0 0 28px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  font-size: 20px;
-  line-height: 1;
-}
-.notice-close:hover {
-  background: var(--panel);
-}
 .empty {
   min-height: 65vh;
   display: flex;
@@ -590,11 +561,11 @@ progress::-webkit-progress-value {
 .export-options {
   position: absolute;
   right: 0;
-  top: 43px;
+  top: calc(100% + 8px);
   z-index: 3;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 6px;
   box-shadow: 0 8px 25px #0001;
   min-width: 250px;
@@ -605,6 +576,30 @@ progress::-webkit-progress-value {
   justify-content: start;
   font-size: 12px;
   text-align: left;
+  border-radius: 7px;
+  padding: 10px 12px;
+  background: transparent;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+.export-options button:hover,
+.export-options button:focus-visible {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.export-menu[open] .export-options {
+  animation: export-appear 180ms ease-out;
+}
+@keyframes export-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 dialog {
   color: var(--ink);
@@ -843,7 +838,6 @@ dialog::backdrop {
   .row-toolbar,
   .project-actions,
   .settings,
-  .notice,
   .phrase-meta button {
     display: none;
   }

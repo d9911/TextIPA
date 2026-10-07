@@ -2,6 +2,7 @@ import { dialects, emptyLibrary } from './preferences.ts';
 import { languageTag, engineLanguage, projectColumns, phraseVersion } from './columns.ts';
 import { validateWordIpa } from './word-ipa.ts';
 import type { Dialect, Language, Library, Phrase, Project } from '../types/domain.ts';
+export const maxImportBytes = 25 * 1024 * 1024;
 const languages: readonly string[] = ['ru', 'en', 'es'];
 const statuses: readonly string[] = ['empty', 'draft', 'reviewed'];
 function record(value: unknown): Record<string, unknown> {
@@ -67,6 +68,18 @@ export function validateProject(value: unknown): Project {
     if (new Set(columnLanguages).size !== columnLanguages.length) throw new Error('INVALID_FILE');
     if (new Set([language, ...columnLanguages]).size > 8) throw new Error('INVALID_FILE');
   }
+  const readingLanguage = p.readingLanguage === undefined ? undefined : languageTag(string(p.readingLanguage, 35));
+  const pronunciations: Record<string, string> = {};
+  if (p.pronunciations !== undefined) {
+    const variants = record(p.pronunciations);
+    if (Object.keys(variants).length > 8) throw new Error('INVALID_FILE');
+    for (const [key, value] of Object.entries(variants)) {
+      const code = languageTag(key);
+      const variant = languageTag(string(value, 35));
+      if (engineLanguage(code) ? !dialects[code].includes(variant as Dialect) : code.split('-')[0] !== variant.split('-')[0]) throw new Error('INVALID_FILE');
+      pronunciations[code] = variant;
+    }
+  }
   return {
     id: string(p.id, 150),
     title: string(p.title, 200),
@@ -76,6 +89,8 @@ export function validateProject(value: unknown): Project {
     phrases,
     ...(translationLanguage !== undefined ? { translationLanguage } : {}),
     ...(columnLanguages !== undefined ? { columnLanguages } : {}),
+    ...(readingLanguage !== undefined ? { readingLanguage } : {}),
+    ...(p.pronunciations !== undefined ? { pronunciations } : {}),
   };
 }
 export function validateLibrary(value: unknown): Library {
@@ -173,7 +188,7 @@ export function importLegacy(value: unknown, title: string): Project {
   return validateProject({ id: crypto.randomUUID(), title, language: 'es', dialect: 'es-ES', updatedAt: new Date().toISOString(), phrases });
 }
 export function decodeImport(text: string, filename: string, language: Language): Project[] {
-  if (new TextEncoder().encode(text).length > 5_000_000) throw new Error('FILE_TOO_LARGE');
+  if (new TextEncoder().encode(text).length > maxImportBytes) throw new Error('FILE_TOO_LARGE');
   if (!filename.toLowerCase().endsWith('.json')) return [projectFromText(filename.replace(/\.(txt|md)$/i, ''), text, language)];
   let value: unknown;
   try {

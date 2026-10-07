@@ -2,6 +2,7 @@ import type { Language, Settings } from '../../types/domain.ts';
 import type { Copy } from '../../i18n/locales.ts';
 import { languageNames } from '../../i18n/locales.ts';
 import { element, labelled, select } from '../../shared/ui/controls.ts';
+import { tooltip } from '../../shared/ui/tooltip.ts';
 import { preferenceMenu } from '../../features/preferences/view.ts';
 import type { ShellPreference } from '../../features/preferences/view.ts';
 
@@ -49,9 +50,13 @@ export function headerView(options: HeaderOptions): HTMLElement {
     ...preferenceMenu(settings, copy, options.preference, options.guide, options.display),
   );
   for (const field of tools.querySelectorAll<HTMLElement>('.compact-field')) {
-    field.title = field.querySelector('.field-label')?.textContent ?? '';
+    const caption = field.querySelector('.field-label')?.textContent ?? '';
+    const trigger = field.querySelector<HTMLElement>('.select-trigger');
+    if (trigger) tooltip(trigger, header, { text: caption, placement: 'below' });
     field.querySelector('.field-label')?.classList.add('sr-only');
   }
+  const preferences = tools.querySelector<HTMLElement>('button[aria-haspopup="dialog"]');
+  if (preferences) tooltip(preferences, header, { text: copy.settingsHint, placement: 'below' });
   header.append(brand, tools);
   return header;
 }

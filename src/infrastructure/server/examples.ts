@@ -1,3 +1,4 @@
+import { maxImportBytes } from '../../domain/library.ts';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { ExampleFile } from '../../types/api.ts';
@@ -18,7 +19,7 @@ export async function listExamples(root: string): Promise<ExampleFile[]> {
       if (entry.isDirectory()) await walk(resolve(folder, entry.name), name + '/');
       else if (entry.isFile() && /\.(txt|md|json)$/i.test(name)) {
         const size = (await stat(resolve(folder, entry.name))).size;
-        if (size <= 5_000_000) files.push({ name, size });
+        if (size <= maxImportBytes) files.push({ name, size });
       }
     }
   }
@@ -28,6 +29,6 @@ export async function listExamples(root: string): Promise<ExampleFile[]> {
 export async function readExample(root: string, name: string): Promise<string> {
   if (!(await listExamples(root)).some((file) => file.name === name)) throw new Error('INVALID_FILE');
   const text = await readFile(resolve(root, 'examples', name), 'utf8');
-  if (Buffer.byteLength(text) > 5_000_000) throw new Error('FILE_TOO_LARGE');
+  if (Buffer.byteLength(text) > maxImportBytes) throw new Error('FILE_TOO_LARGE');
   return text;
 }

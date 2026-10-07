@@ -16,6 +16,7 @@ export function tooltip(control: HTMLElement, owner: HTMLElement, options: { tex
   tip.id = 'tooltip-' + crypto.randomUUID();
   tip.setAttribute('role', 'tooltip');
   tip.setAttribute('popover', 'manual');
+  tip.textContent = options.text ?? control.getAttribute('aria-label') ?? control.textContent;
   control.removeAttribute('title');
   control.setAttribute('aria-describedby', tip.id);
   owner.append(tip);
@@ -26,6 +27,7 @@ export function tooltip(control: HTMLElement, owner: HTMLElement, options: { tex
     if (dismiss === hide) dismiss = undefined;
   };
   const show = () => {
+    if (control.getAttribute('aria-expanded') === 'true') return;
     clearTimeout(timer);
     if (dismiss !== hide) dismiss?.();
     dismiss = hide;
@@ -52,7 +54,7 @@ export function tooltip(control: HTMLElement, owner: HTMLElement, options: { tex
   control.addEventListener('blur', hide);
   control.addEventListener('click', hide);
   control.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') hide();
+    if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') hide();
   });
   tip.addEventListener('pointerenter', () => clearTimeout(timer));
   tip.addEventListener('pointerleave', later);

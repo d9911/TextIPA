@@ -6,6 +6,7 @@ import { projectColumns, phraseVersion, languageLabel } from '../../domain/colum
 import type { Language } from '../../types/domain.ts';
 import type { Settings } from '../../types/domain.ts';
 import { pronunciationText } from '../../features/pronunciation/annotated-text.ts';
+import { tooltip } from '../../shared/ui/tooltip.ts';
 interface RowsOptions {
   project: Project;
   rows: Phrase[];
@@ -217,6 +218,7 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
       options.changed();
     });
     const remove = button('×', () => options.remove(q), 'icon-button subdued', copy.remove);
+    tooltip(remove, row, { text: copy.removePhraseHint, placement: 'below' });
     remove.disabled = busy || p.phrases.length === 1;
     meta.append(
       labelled(copy.pauses + ' (' + copy.seconds + ')', pause, 'inline-field'),

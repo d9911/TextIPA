@@ -1,10 +1,13 @@
+import { mountNotifications, showNotification } from '../widgets/notifications/view.ts';
+import type { NoticeKind } from '../domain/notifications.ts';
 import { workspaceView } from '../widgets/workspace/view.ts';
 import { headerView } from '../widgets/header/view.ts';
 import { sidebarView } from '../widgets/sidebar/view.ts';
 import { footerView } from '../widgets/footer/view.ts';
+import { scrollNavigation, watchScrollNavigation } from '../widgets/scroll-navigation/view.ts';
 import { readerView } from '../widgets/reader/view.ts';
 import { editorRows } from '../widgets/editor/rows.ts';
-import { applyShellSettings, watchHeader } from './shell.ts';
+import { applyShellSettings, watchHeader, watchFooter } from './shell.ts';
 import { showExamples } from '../features/library/examples-dialog.ts';
 import '../styles/index.css';
 import '../styles/shell.css';
@@ -21,12 +24,13 @@ import { showPronunciationGuide } from '../features/pronunciation/dialog.ts';
 import { button, dialog as createDialog, element, labelled, select } from '../shared/ui/controls.ts';
 import type { Dialect, Language, Library, Phrase, Project, Settings } from '../types/domain.ts';
 import { locales, languageNames } from '../i18n/locales.ts';
-import { decodeImport, durationMs, mergeProjects, fingerprint, projectFromText, validateLibrary } from '../domain/library.ts';
-import { loadLibrary, saveLibrary, storageKey, loadReadingPosition, saveReadingPosition } from '../infrastructure/storage.ts';
+import { decodeImport, durationMs, mergeProjects, fingerprint, projectFromText, validateLibrary, maxImportBytes } from '../domain/library.ts';
+import { loadReadingPosition, saveReadingPosition } from '../infrastructure/storage.ts';
+import { LibraryStorage } from '../infrastructure/library-storage.ts';
+import { indexedLibraryDatabase } from '../infrastructure/library-database.ts';
 import { bundledExample } from '../infrastructure/example.ts';
 import { restoreExamplePronunciation } from '../domain/example-pronunciation.ts';
-import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVersion } from '../domain/columns.ts';
-import { dialects } from '../domain/preferences.ts';
+import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVersion, readingLanguage, pronunciationDialect } from '../domain/columns.ts';
 import { ipaWords, validWordIpa, displayWordIpa } from '../domain/word-ipa.ts';
 import { requestWordAnnotations } from '../features/pronunciation/word-annotations.ts';
 import { columnSettings } from '../features/preferences/columns-dialog.ts';
@@ -35,14 +39,16 @@ const app = document.querySelector<HTMLDivElement>('#app')!;
 const browserStorage = {
   getItem: (key: string) => window.localStorage.getItem(key),
   setItem: (key: string, value: string) => window.localStorage.setItem(key, value),
+  removeItem: (key: string) => window.localStorage.removeItem(key),
 };
-const loaded = loadLibrary(browserStorage, navigator.languages);
+const libraryStorage = new LibraryStorage(browserStorage, typeof indexedDB === 'undefined' ? undefined : indexedLibraryDatabase(indexedDB));
+const loaded = await libraryStorage.load(navigator.languages);
 let library: Library = loaded.library;
 let storageFailed = loaded.error;
 if (!loaded.error) {
   let changed = false;
   const requested = new URL(window.location.href).searchParams.get('project');
-  const firstVisit = browserStorage.getItem(storageKey) === null;
+  const firstVisit = !loaded.existing;
   if (
     (firstVisit || requested === bundledExample.id) &&
     library.projects.length < 300 &&
@@ -53,9 +59,11 @@ if (!loaded.error) {
     changed = true;
   }
   for (const project of library.projects) changed = restoreExamplePronunciation(project, bundledExample) || changed;
-  if (changed) storageFailed = !saveLibrary(browserStorage, library);
+  if (changed) storageFailed = !(await libraryStorage.save(library));
 }
 let message = loaded.error ? locales[library.settings.locale].corrupt : storageFailed ? locales[library.settings.locale].storageError : '';
+let savePending = false;
+let saveRevision = 0;
 let engineAvailable = false;
 let engineChecking = true;
 let generatedCount = 0;
@@ -84,27 +92,35 @@ function checkpoint(): void {
   editHistory.push(JSON.stringify(library));
   if (editHistory.length > 20) editHistory.shift();
 }
-function notify(text: string): void {
-  message = text;
-  const n = document.querySelector('#notice');
-  if (n) {
-    n.querySelector('.notice-message')!.textContent = text;
-    n.toggleAttribute('hidden', !text);
-  }
+function notify(text: string, kind: NoticeKind = 'warning'): void {
+  showNotification(text, kind);
 }
 function persist(): void {
   const p = current();
   if (p) p.updatedAt = new Date().toISOString();
-  storageFailed = !saveLibrary(browserStorage, library);
-  const n = document.querySelector('#save-status');
-  if (n) {
-    n.textContent = storageFailed ? t().unsaved : t().saved;
-    n.classList.toggle('failure', storageFailed);
-  }
-  if (storageFailed) notify(t().storageError);
+  queueSave();
   const undoEl = document.querySelector<HTMLButtonElement>('#undo-button');
   if (undoEl) undoEl.disabled = busy || !editHistory.length;
   updateStats();
+}
+function updateSaveStatus(): void {
+  const status = document.querySelector('#save-status');
+  if (status) {
+    status.textContent = savePending ? t().saving : storageFailed ? t().unsaved : t().saved;
+    status.classList.toggle('failure', storageFailed && !savePending);
+  }
+}
+function queueSave(): void {
+  const revision = ++saveRevision;
+  savePending = true;
+  updateSaveStatus();
+  void libraryStorage.save(library).then((saved) => {
+    if (revision !== saveRevision) return;
+    savePending = false;
+    storageFailed = !saved;
+    updateSaveStatus();
+    if (!saved) notify(t().storageError, 'error');
+  });
 }
 function errorMessage(error: unknown): string {
   const code = error instanceof Error ? error.message : '';
@@ -144,10 +160,11 @@ function syncNavigation(mode: 'push' | 'replace' = 'replace'): void {
   navigation.write(navigationUrl(new URL(window.location.href), navigationState()), mode);
   if (!loaded.error) {
     const position = new URL(navigationUrl(new URL(window.location.origin), navigationState()), window.location.origin).searchParams;
-    if (!saveReadingPosition(browserStorage, position) || !saveLibrary(browserStorage, library)) {
+    if (!saveReadingPosition(browserStorage, position)) {
       storageFailed = true;
-      notify(t().storageError);
+      notify(t().storageError, 'error');
     }
+    queueSave();
   }
   updateNavigationControls();
 }
@@ -162,7 +179,7 @@ function restoreNavigation(initial = false): void {
   focusMode = result.state.focus;
   if (result.state.ipaDisplay !== library.settings.ipaDisplay) {
     library.settings.ipaDisplay = result.state.ipaDisplay!;
-    storageFailed = !saveLibrary(browserStorage, library);
+    queueSave();
   }
   if (result.corrected) message = t().linkAdjusted;
   syncNavigation();
@@ -253,7 +270,7 @@ function importProjects(projects: Project[], settings?: Settings, activeId?: str
     persist();
     render();
   }
-  notify(t().imported + ': ' + result.added);
+  notify(t().imported + ': ' + result.added, 'success');
 }
 async function importFiles(files: readonly File[], language: Language): Promise<void> {
   try {
@@ -261,7 +278,7 @@ async function importFiles(files: readonly File[], language: Language): Promise<
     let settings: Settings | undefined;
     let activeId: string | null | undefined;
     for (const file of files) {
-      if (file.size > 5_000_000) throw new Error('FILE_TOO_LARGE');
+      if (file.size > maxImportBytes) throw new Error('FILE_TOO_LARGE');
       const text = await file.text();
       projects.push(...decodeImport(text, file.name, language));
       if (file.name.toLowerCase().endsWith('.json')) {
@@ -275,7 +292,7 @@ async function importFiles(files: readonly File[], language: Language): Promise<
     }
     importProjects(projects, settings, activeId);
   } catch (error) {
-    notify(errorMessage(error));
+    notify(errorMessage(error), 'error');
   }
 }
 function chooseImport(files: readonly File[]): void {
@@ -394,9 +411,9 @@ function move(direction: number): void {
   }
   focusedId = next.id;
   syncNavigation(playing ? 'replace' : 'push');
+  if (playing) schedule();
   renderReader();
   highlightRows(library.settings.scrollToPhrase);
-  if (playing) schedule();
 }
 function highlightRows(scroll = true): void {
   for (const row of document.querySelectorAll<HTMLElement>('.phrase-row')) row.classList.toggle('selected', row.dataset.id === focusedId);
@@ -407,7 +424,7 @@ function schedule(): void {
   clearInterval(timerTick);
   const q = focused();
   if (!q || !playing) return;
-  timerTotal = durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier);
+  timerTotal = durationMs(phraseVersion(current()!, q, readingLanguage(current()!)).text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier);
   timerDeadline = performance.now() + timerTotal;
   timer = setTimeout(() => move(1), timerTotal);
   timerTick = setInterval(updateTimerDisplay, 100);
@@ -418,9 +435,23 @@ function updateTimerDisplay(): void {
   const label = document.querySelector('#timer-countdown');
   const progress = document.querySelector<HTMLProgressElement>('#timer-progress');
   if (label && playing) label.textContent = (remaining / 1000).toFixed(1) + ' ' + t().seconds;
-  if (progress && playing) progress.value = Math.max(0, timerTotal - remaining);
+  if (progress && playing) {
+    progress.max = timerTotal;
+    progress.value = Math.max(0, timerTotal - remaining);
+  }
 }
 function jump(edge: 'first' | 'last'): void {
+  if (search) {
+    const rows = current()?.phrases ?? [];
+    focusedId = (edge === 'first' ? rows[0] : rows.at(-1))?.id ?? null;
+    search = '';
+    selectedBlock = '';
+    syncNavigation('push');
+    if (playing) schedule();
+    render();
+    highlightRows(library.settings.scrollToPhrase);
+    return;
+  }
   const rows = visiblePhrases();
   const at = rows.findIndex((q) => q.id === focusedId);
   move((edge === 'first' ? 0 : rows.length - 1) - at);
@@ -444,13 +475,19 @@ function listen(): void {
     renderReader();
     return;
   }
-  const voice = localVoice(speechSynthesis.getVoices(), p.language, p.dialect);
+  const code = readingLanguage(p);
+  if (!phraseVersion(p, q, code).text.trim()) {
+    notify(t().noTranslation);
+    renderReader();
+    return;
+  }
+  const voice = localVoice(speechSynthesis.getVoices(), code, pronunciationDialect(p, code));
   if (!voice) {
     notify(t().noVoice);
     renderReader();
     return;
   }
-  const utterance = new SpeechSynthesisUtterance(q.text);
+  const utterance = new SpeechSynthesisUtterance(phraseVersion(p, q, code).text);
   utterance.voice = voice;
   utterance.lang = voice.lang;
   utterance.rate = library.settings.rate;
@@ -481,7 +518,9 @@ function renderReader(): void {
     phrase: q,
     copy: t(),
     playing,
-    timerTotal: playing ? timerTotal : durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier),
+    timerTotal: playing
+      ? timerTotal
+      : durationMs(phraseVersion(current()!, q, readingLanguage(current()!)).text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier),
     timerRemaining: playing ? Math.max(0, timerDeadline - performance.now()) : undefined,
     voiceSpeaking,
     focusMode,
@@ -511,12 +550,12 @@ function renderReader(): void {
 }
 function prepareFocusedAnnotations(project: Project, phrase: Phrase): void {
   if (library.settings.ipaDisplay !== 'above' || !engineAvailable || busy) return;
-  const columns = library.settings.showTranslation ? projectColumns(project) : [project.language];
+  const columns = library.settings.showTranslation ? projectColumns(project) : [readingLanguage(project)];
   for (const code of columns) {
     if (!engineLanguage(code)) continue;
     const version = phraseVersion(project, phrase, code);
     if (!version.ipa.trim() || displayWordIpa(version)) continue;
-    const dialect = (code === project.language ? project.dialect : dialects[code][0]!) as Dialect;
+    const dialect = pronunciationDialect(project, code) as Dialect;
     const snapshot = { text: version.text, ipa: version.ipa, ipaStatus: version.ipaStatus };
     const key = JSON.stringify([project.id, phrase.id, code, dialect, snapshot]);
     if (annotationPending.has(key) || annotationFailed.has(key)) continue;
@@ -526,7 +565,7 @@ function prepareFocusedAnnotations(project: Project, phrase: Phrase): void {
         if (busy || current() !== project || focused() !== phrase || library.settings.ipaDisplay !== 'above') return;
         const wordIpa = await requestWordAnnotations(snapshot.text, code, dialect);
         const live = phraseVersion(project, phrase, code);
-        if (busy || current() !== project || focused() !== phrase || (project.dialect !== dialect && code === project.language)) return;
+        if (busy || current() !== project || focused() !== phrase || pronunciationDialect(project, code) !== dialect) return;
         if (live.text !== snapshot.text || live.ipa !== snapshot.ipa || live.ipaStatus !== snapshot.ipaStatus) return;
         editableVersion(project, phrase, code).wordIpa = wordIpa;
         persist();
@@ -553,7 +592,7 @@ async function generate(): Promise<void> {
         .map((q) => ({ id: q.id, version: phraseVersion(p, q, code) }));
       return {
         code,
-        dialect: (code === p.language ? p.dialect : dialects[code][0]!) as Dialect,
+        dialect: pronunciationDialect(p, code) as Dialect,
         rows,
         words: [...new Set(rows.flatMap((row) => ipaWords(row.version.text)))],
       };
@@ -620,9 +659,9 @@ async function generate(): Promise<void> {
       version.wordIpa = result.wordIpa;
     }
     persist();
-    notify(t().ready);
+    notify(t().ready, 'success');
   } catch (error) {
-    notify(errorMessage(error));
+    notify(errorMessage(error), 'error');
   } finally {
     busy = false;
     render();
@@ -681,6 +720,7 @@ function render(): void {
   ensureFocus();
   const activeControl = document.activeElement?.closest<HTMLElement>('.custom-select');
   const controlIndex = activeControl ? [...document.querySelectorAll('.custom-select')].indexOf(activeControl) : -1;
+  const settingsOpen = document.querySelector<HTMLDetailsElement>('details.settings')?.open ?? false;
   const copy = t();
   document.documentElement.lang = library.settings.locale;
   document.title = 'Text IPA · ' + copy.guide;
@@ -723,14 +763,11 @@ function render(): void {
     guide: showGuide,
   });
   app.append(header);
-  const notice = element('div', 'notice');
-  notice.append(
-    element('span', 'notice-message', message),
-    button('×', () => notify(''), 'notice-close', copy.close),
-  );
-  notice.id = 'notice';
-  notice.setAttribute('role', 'status');
-  notice.hidden = !message;
+  mountNotifications(copy.close);
+  if (message) {
+    notify(message, loaded.error || storageFailed ? 'error' : 'warning');
+    message = '';
+  }
   const layout = element('div', 'layout');
   const sidebar = sidebarView({
     library,
@@ -745,7 +782,7 @@ function render(): void {
     create: newProject,
     import: chooseImport,
     activate,
-    examples: () => showExamples(copy, chooseImport, (error) => notify(errorMessage(error))),
+    examples: () => showExamples(copy, chooseImport, (error) => notify(errorMessage(error), 'error')),
     export: () => {
       const project = current();
       if (project) download(project.title + '.json', JSON.stringify(project, null, 2) + '\n', 'application/json');
@@ -795,16 +832,30 @@ function render(): void {
       persist();
       render();
     },
+    readingLanguage: (value) => {
+      if (!p || !projectColumns(p).includes(value)) return;
+      stop();
+      p.readingLanguage = value;
+      persist();
+      render();
+    },
     dialect: (value) => {
       if (!p) return;
+      stop();
       checkpoint();
-      p.dialect = value;
+      const code = readingLanguage(p);
+      if (code === p.language) p.dialect = value;
+      else {
+        p.pronunciations ??= {};
+        p.pronunciations[code] = value;
+      }
       p.phrases.forEach((q) => {
-        q.ipa = '';
-        q.ipaStatus = 'empty';
-        delete q.wordIpa;
+        const version = editableVersion(p, q, code);
+        version.ipa = '';
+        version.ipaStatus = 'empty';
+        delete version.wordIpa;
       });
-      restoreExamplePronunciation(p, bundledExample);
+      if (code === p.language) restoreExamplePronunciation(p, bundledExample);
       persist();
       render();
     },
@@ -853,10 +904,17 @@ function render(): void {
   });
   rowsHost = workspace.rows;
   const main = workspace.main;
-  main.prepend(notice);
   layout.append(sidebar, main);
   app.append(layout);
-  app.append(footerView(copy, storageFailed, showGuide));
+  const footer = footerView(copy, storageFailed, showGuide);
+  app.append(footer);
+  watchFooter(footer);
+  const scrolling = scrollNavigation(copy);
+  app.append(scrolling);
+  watchScrollNavigation(scrolling);
+  updateSaveStatus();
+  const disclosure = document.querySelector<HTMLDetailsElement>('details.settings');
+  if (disclosure) disclosure.open = settingsOpen;
   applyShellSettings(library.settings, copy);
   watchHeader(header);
   if (!p) syncNavigation();
@@ -893,7 +951,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 window.addEventListener('beforeunload', (e) => {
-  if (storageFailed && library.projects.length) {
+  if ((storageFailed || savePending) && library.projects.length) {
     e.preventDefault();
     e.returnValue = '';
   }
@@ -905,7 +963,10 @@ window.addEventListener('popstate', (event) => {
 });
 restoreNavigation(true);
 render();
-setupPwa(() => library.settings.locale, notify);
+setupPwa(
+  () => library.settings.locale,
+  (text) => notify(text, 'warning'),
+);
 void fetch('/api/health', { signal: AbortSignal.timeout(10000) })
   .then((r) => r.json() as Promise<HealthResponse>)
   .then((data) => {

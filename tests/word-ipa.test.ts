@@ -59,3 +59,27 @@ test('example annotations survive import for every language and reject stale wor
   legacy.phrases[0]!.ipa = '[ˈola]';
   assert.equal(validWordIpa(validateProject(legacy).phrases[0]!), false);
 });
+
+test('reading language and pronunciation survive backups independently for each project column', async () => {
+  const { readingLanguage, pronunciationDialect, phraseVersion } = await import('../src/domain/columns.ts');
+  const { validateProject } = await import('../src/domain/library.ts');
+  const bundledExample = validateProject(JSON.parse(readFileSync(new URL('../examples/kolobok-es-ru.json', import.meta.url), 'utf8')));
+  const p = structuredClone(bundledExample);
+  p.readingLanguage = 'en';
+  p.pronunciations = { en: 'en-US', ru: 'ru-RU' };
+  const restored = validateProject(JSON.parse(JSON.stringify(p)));
+  assert.equal(readingLanguage(restored), 'en');
+  assert.equal(pronunciationDialect(restored, 'en'), 'en-US');
+  assert.equal(pronunciationDialect(restored, 'es'), p.dialect);
+  assert.equal(pronunciationDialect(restored, 'ru'), 'ru-RU');
+  assert.match(phraseVersion(restored, restored.phrases[0]!, readingLanguage(restored)).text, /Once/);
+  restored.readingLanguage = 'fr';
+  assert.equal(readingLanguage(restored), restored.language);
+  assert.throws(() => validateProject({ ...p, pronunciations: { en: 'es-ES' } }), /INVALID_FILE/);
+  const { restoreExamplePronunciation } = await import('../src/domain/example-pronunciation.ts');
+  const english = restored.phrases[0]!.translations!.en!;
+  english.ipa = '';
+  delete english.wordIpa;
+  restoreExamplePronunciation(restored, bundledExample);
+  assert.equal(english.ipa, '');
+});

@@ -36,15 +36,15 @@ TXT/Markdown crean el texto principal. JSON conserva versiones, IPA, anotaciones
 
 ## Tecnologías
 
-| Área               | Implementación                                                 |
-| ------------------ | -------------------------------------------------------------- |
-| Interfaz           | TypeScript, HTML semántico, variables CSS; sin React/Next.js   |
-| Compilación        | Vite 8.3.2, TypeScript 7.0.2                                   |
-| API local          | Node.js 24+, middleware Vite, eSpeak NG                        |
-| Fuente IPA         | Charis 7.000 local, licencia gratuita SIL OFL 1.1              |
-| Almacenamiento     | localStorage y copias JSON portátiles                          |
-| Aplicación offline | Manifest, iconos y service worker generado por la compilación  |
-| Verificación       | Node test runner, TypeScript, Prettier 3.9.9 y navegador local |
+| Área               | Implementación                                                                |
+| ------------------ | ----------------------------------------------------------------------------- |
+| Interfaz           | TypeScript, HTML semántico, variables CSS; sin React/Next.js                  |
+| Compilación        | Vite 8.3.2, TypeScript 7.0.2                                                  |
+| API local          | Node.js 24+, middleware Vite, eSpeak NG                                       |
+| Fuente IPA         | Charis 7.000 local, licencia gratuita SIL OFL 1.1                             |
+| Almacenamiento     | IndexedDB para textos; localStorage para preferencias y posición; copias JSON |
+| Aplicación offline | Manifest, iconos y service worker generado por la compilación                 |
+| Verificación       | Node test runner, TypeScript, Prettier 3.9.9 y navegador local                |
 
 ## Desarrollo local
 
@@ -76,7 +76,7 @@ TypeScript es el código fuente. `dist/`, dependencias, diagnósticos y ejemplos
 
 ## Privacidad y uso offline
 
-Textos y ajustes se guardan en localStorage de este navegador. La IPA envía el texto seleccionado solamente al servidor local `127.0.0.1`, que ejecuta eSpeak NG. No hay analítica, traducción automática ni TTS en la nube. Exporta JSON antes de borrar datos. Otro perfil, dirección o puerto usa un almacenamiento independiente.
+Los textos se guardan en IndexedDB; las preferencias y la posición también usan registros pequeños de localStorage. La biblioteca anterior migra tras una escritura correcta. Sin IndexedDB se usa localStorage y se muestran los errores de guardado. El límite de importación JSON es de 25 MiB. La copia de la base incluye preferencias para recuperación. La IPA envía el texto seleccionado solamente al servidor local `127.0.0.1`, que ejecuta eSpeak NG. No hay analítica, traducción automática ni TTS en la nube. Exporta JSON antes de borrar datos. Otro perfil, dirección o puerto usa un almacenamiento independiente.
 
 Tras una carga de producción online, la aplicación almacenada y los textos guardados funcionan offline. La nueva IPA y el catálogo requieren el servidor local. El service worker guarda archivos de la aplicación, no respuestas API ni texto personal; actualiza al cerrar las ventanas. Los badges del README proceden de Shields.io y no forman parte de la aplicación.
 

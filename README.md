@@ -36,15 +36,15 @@ TXT/Markdown create a source script. JSON preserves language versions, IPA, word
 
 ## Technologies
 
-| Area         | Implementation                                                     |
-| ------------ | ------------------------------------------------------------------ |
-| Browser UI   | TypeScript, semantic HTML, CSS variables; no React/Next.js         |
-| Build        | Vite 8.3.2, TypeScript 7.0.2                                       |
-| Local API    | Node.js 24+, Vite middleware, eSpeak NG                            |
-| IPA font     | Locally served Charis 7.000, free SIL OFL 1.1                      |
-| Storage      | Browser localStorage; portable JSON backups                        |
-| Offline app  | Manifest, icons and versioned build-generated service worker       |
-| Verification | Node test runner, TypeScript, Prettier 3.9.9; local browser checks |
+| Area         | Implementation                                                         |
+| ------------ | ---------------------------------------------------------------------- |
+| Browser UI   | TypeScript, semantic HTML, CSS variables; no React/Next.js             |
+| Build        | Vite 8.3.2, TypeScript 7.0.2                                           |
+| Local API    | Node.js 24+, Vite middleware, eSpeak NG                                |
+| IPA font     | Locally served Charis 7.000, free SIL OFL 1.1                          |
+| Storage      | IndexedDB library; localStorage preferences and position; JSON backups |
+| Offline app  | Manifest, icons and versioned build-generated service worker           |
+| Verification | Node test runner, TypeScript, Prettier 3.9.9; local browser checks     |
 
 ## Local development
 
@@ -76,7 +76,7 @@ TypeScript is the source. `dist/`, dependencies, diagnostics and personal sample
 
 ## Privacy and offline use
 
-Scripts and settings are stored in this browser's localStorage. IPA sends selected text only to the running local server on `127.0.0.1`, which invokes eSpeak NG. No analytics, automatic translation API or cloud TTS is integrated. Back up JSON before clearing site data. Another browser profile, host or port has separate storage.
+Scripts are stored in IndexedDB in this browser; preferences and reading position also use small localStorage records. Existing localStorage libraries migrate automatically after a successful database write. If IndexedDB is unavailable, localStorage is used with visible storage errors. JSON imports are limited to 25 MiB. The database snapshot includes preferences for recovery. IPA sends selected text only to the running local server on `127.0.0.1`, which invokes eSpeak NG. No analytics, automatic translation API or cloud TTS is integrated. Back up JSON before clearing site data. Another browser profile, host or port has separate storage.
 
 After an online production load, cached app files and saved scripts work offline. New IPA and the example catalog need the local server. The service worker caches app files, not API responses or personal text, and activates updates after app windows close. README badges come from Shields.io and are not part of the application.
 
