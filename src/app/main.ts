@@ -1,0 +1,781 @@
+import { workspaceView } from '../widgets/workspace/view.ts';
+import { headerView } from '../widgets/header/view.ts';
+import { sidebarView } from '../widgets/sidebar/view.ts';
+import { footerView } from '../widgets/footer/view.ts';
+import { readerView } from '../widgets/reader/view.ts';
+import { editorRows } from '../widgets/editor/rows.ts';
+import { applyShellSettings, watchHeader } from './shell.ts';
+import { showExamples } from '../features/library/examples-dialog.ts';
+import '../styles/index.css';
+import '../styles/shell.css';
+import '../styles/pronunciation.css';
+import { setupPwa } from '../infrastructure/pwa.ts';
+import { localVoice } from '../features/playback/voice.ts';
+import { resizePhraseFields } from '../widgets/editor/layout.ts';
+import { matchingPhrases, NavigationHistory, navigationUrl, resolveNavigation } from './navigation.ts';
+import type { NavigationState } from './navigation.ts';
+import type { HealthResponse, IpaRequest, IpaResponse } from '../types/api.ts';
+import { showPronunciationGuide } from '../features/pronunciation/dialog.ts';
+import { button, dialog as createDialog, element, labelled, select } from '../shared/ui/controls.ts';
+import type { Dialect, Language, Library, Phrase, Project, Settings } from '../types/domain.ts';
+import { locales, languageNames } from '../i18n/locales.ts';
+import { decodeImport, durationMs, mergeProjects, fingerprint, projectFromText, validateLibrary } from '../domain/library.ts';
+import { loadLibrary, saveLibrary } from '../infrastructure/storage.ts';
+import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVersion } from '../domain/columns.ts';
+import { dialects } from '../domain/preferences.ts';
+import { columnSettings } from '../features/preferences/columns-dialog.ts';
+
+const app = document.querySelector<HTMLDivElement>('#app')!;
+const browserStorage = {
+  getItem: (key: string) => window.localStorage.getItem(key),
+  setItem: (key: string, value: string) => window.localStorage.setItem(key, value),
+};
+const loaded = loadLibrary(browserStorage, navigator.languages);
+let library: Library = loaded.library;
+let storageFailed = loaded.error;
+let message = loaded.error ? locales[library.settings.locale].corrupt : '';
+let engineAvailable = false;
+let engineChecking = true;
+let generatedCount = 0;
+let generationTotal = 0;
+let busy = false;
+let focusedId: string | null = null;
+let selectedBlock = '';
+let search = '';
+let focusMode = false;
+let playing = false;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let voiceSpeaking = false;
+const editHistory: string[] = [];
+const navigation = new NavigationHistory(window);
+let rowsHost: HTMLElement | null = null;
+const t = () => locales[library.settings.locale];
+const current = () => library.projects.find((p) => p.id === library.activeId);
+const focused = () => current()?.phrases.find((q) => q.id === focusedId);
+function checkpoint(): void {
+  editHistory.push(JSON.stringify(library));
+  if (editHistory.length > 20) editHistory.shift();
+}
+function notify(text: string): void {
+  message = text;
+  const n = document.querySelector('#notice');
+  if (n) {
+    n.textContent = text;
+    n.toggleAttribute('hidden', !text);
+  }
+}
+function persist(): void {
+  const p = current();
+  if (p) p.updatedAt = new Date().toISOString();
+  storageFailed = !saveLibrary(browserStorage, library);
+  const n = document.querySelector('#save-status');
+  if (n) {
+    n.textContent = storageFailed ? t().unsaved : t().saved;
+    n.classList.toggle('failure', storageFailed);
+  }
+  if (storageFailed) notify(t().storageError);
+  const undoEl = document.querySelector<HTMLButtonElement>('#undo-button');
+  if (undoEl) undoEl.disabled = busy || !editHistory.length;
+  updateStats();
+}
+function errorMessage(error: unknown): string {
+  const code = error instanceof Error ? error.message : '';
+  const copy = t();
+  return (
+    (
+      {
+        INVALID_FILE: copy.invalid,
+        FILE_TOO_LARGE: copy.tooLarge,
+        EMPTY_TEXT: copy.emptyText,
+        ENGINE_MISSING: copy.engineMissing,
+        ENGINE_BUSY: copy.engineBusy,
+        ENGINE_TIMEOUT: copy.engineError,
+        ENGINE_FAILED: copy.engineError,
+        STALE: copy.stale,
+      } as Record<string, string>
+    )[code] ?? copy.error
+  );
+}
+function stop(): void {
+  clearTimeout(timer);
+  playing = false;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  voiceSpeaking = false;
+}
+function navigationState(): NavigationState {
+  return { projectId: library.activeId, block: selectedBlock, phraseId: focusedId, query: search, focus: focusMode };
+}
+function syncNavigation(mode: 'push' | 'replace' = 'replace'): void {
+  if (!search && selectedBlock && focused() && focused()!.block !== selectedBlock) {
+    selectedBlock = focused()!.block;
+    const blocks = document.querySelector<HTMLElement & { value: string }>('.block-select .custom-select');
+    if (blocks) blocks.value = selectedBlock;
+  }
+  navigation.write(navigationUrl(new URL(window.location.href), navigationState()), mode);
+  updateNavigationControls();
+}
+function restoreNavigation(): void {
+  stop();
+  const result = resolveNavigation(new URL(window.location.href).searchParams, library);
+  library.activeId = result.state.projectId;
+  selectedBlock = result.state.block;
+  focusedId = result.state.phraseId;
+  search = result.state.query;
+  focusMode = result.state.focus;
+  if (result.corrected) message = t().linkAdjusted;
+  syncNavigation();
+}
+function updateNavigationControls(): void {
+  const back = document.querySelector<HTMLButtonElement>('#navigation-back');
+  const forward = document.querySelector<HTMLButtonElement>('#navigation-forward');
+  if (back) back.disabled = !navigation.canBack;
+  if (forward) forward.disabled = !navigation.canForward;
+  const trail = document.querySelector<HTMLElement>('.navigation-trail');
+  const p = current();
+  const q = focused();
+  if (trail && p) {
+    trail.textContent = [p.title, selectedBlock || t().allBlocks, q ? t().selected + ' ' + (p.phrases.indexOf(q) + 1) : ''].filter(Boolean).join(' / ');
+    trail.title = trail.textContent;
+  }
+}
+function activate(project: Project): void {
+  stop();
+  library.activeId = project.id;
+  focusedId = project.phrases[0]?.id ?? null;
+  selectedBlock = '';
+  search = '';
+  syncNavigation('push');
+  render();
+}
+function visiblePhrases(): Phrase[] {
+  return matchingPhrases(current()?.phrases ?? [], '', search);
+}
+function ensureFocus(): void {
+  if (selectedBlock && !current()?.phrases.some((q) => q.block === selectedBlock)) selectedBlock = '';
+  const rows = visiblePhrases();
+  if (!rows.some((q) => q.id === focusedId)) focusedId = rows[0]?.id ?? null;
+  if (!focusedId) focusMode = false;
+}
+function updateStats(): void {
+  const p = current();
+  if (!p) return;
+  const count = p.phrases.filter((q) => q.done).length;
+  const words = p.phrases.reduce((n, q) => n + q.text.trim().split(/\s+/).filter(Boolean).length, 0);
+  const stats = document.querySelector('#stats');
+  if (stats)
+    stats.textContent = words + ' ' + t().words + ' · ' + p.phrases.length + ' ' + t().phrases + ' · ' + count + '/' + p.phrases.length + ' ' + t().practiced;
+  const bar = document.querySelector<HTMLProgressElement>('#practice-progress');
+  if (bar) {
+    bar.max = p.phrases.length;
+    bar.value = count;
+  }
+}
+function download(filename: string, content: string, mime: string): void {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = element('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function undo(): void {
+  const previous = editHistory.pop();
+  if (!previous) return;
+  stop();
+  library = JSON.parse(previous) as Library;
+  focusedId = current()?.phrases[0]?.id ?? null;
+  selectedBlock = '';
+  search = '';
+  persist();
+  render();
+}
+function importProjects(projects: Project[], settings?: Settings, activeId?: string | null): void {
+  const result = mergeProjects(library.projects, projects);
+  if (!result.added && !settings) {
+    const existing = library.projects.find((project) => projects.some((incoming) => fingerprint(incoming) === fingerprint(project)));
+    if (existing) activate(existing);
+    notify(t().duplicate);
+    return;
+  }
+  checkpoint();
+  library.projects = result.projects;
+  if (settings) library.settings = settings;
+  const target = result.projects.find((p) => p.id === activeId) ?? result.projects[result.projects.length - 1];
+  if (target) {
+    activate(target);
+    persist();
+  } else {
+    stop();
+    library.activeId = null;
+    persist();
+    render();
+  }
+  notify(t().imported + ': ' + result.added);
+}
+async function importFiles(files: readonly File[], language: Language): Promise<void> {
+  try {
+    const projects: Project[] = [];
+    let settings: Settings | undefined;
+    let activeId: string | null | undefined;
+    for (const file of files) {
+      if (file.size > 5_000_000) throw new Error('FILE_TOO_LARGE');
+      const text = await file.text();
+      projects.push(...decodeImport(text, file.name, language));
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const x = JSON.parse(text) as Record<string, unknown>;
+        if (x.schemaVersion === 1) {
+          const backup = validateLibrary(x);
+          settings = backup.settings;
+          activeId = backup.activeId;
+        }
+      }
+    }
+    importProjects(projects, settings, activeId);
+  } catch (error) {
+    notify(errorMessage(error));
+  }
+}
+function chooseImport(files: readonly File[]): void {
+  if (!files.length) return;
+  if (files.every((f) => f.name.toLowerCase().endsWith('.json'))) {
+    void importFiles(files, 'es');
+    return;
+  }
+  const d = dialog(t().import);
+  const language = select(Object.entries(languageNames), current()?.language ?? 'es', () => {});
+  d.body.append(element('p', 'muted', files.map((f) => f.name).join(', ')), labelled(t().textLanguage, language));
+  d.body.append(
+    button(
+      t().import,
+      () => {
+        const value = language.value as Language;
+        d.dialog.close();
+        void importFiles(files, value);
+      },
+      'button primary',
+    ),
+  );
+  d.dialog.showModal();
+}
+function dialog(title: string) {
+  return createDialog(title, t().close);
+}
+function newProject(): void {
+  const d = dialog(t().new);
+  const form = element('form');
+  form.append(element('p', 'muted', t().newHint));
+  const name = element('input');
+  name.required = true;
+  name.maxLength = 200;
+  name.placeholder = t().titlePlaceholder;
+  const language = element('input');
+  language.value = 'es';
+  language.maxLength = 35;
+  language.required = true;
+  const columns = element('input');
+  columns.placeholder = 'en, ru';
+  columns.maxLength = 300;
+  const text = element('textarea', 'import-text');
+  text.required = true;
+  text.maxLength = 500000;
+  text.placeholder = t().textPlaceholder.replace(/\n/g, '\n');
+  form.append(labelled(t().project, name), labelled(t().sourceLanguageCode, language), labelled(t().columnLanguageCodes, columns), labelled(t().paste, text));
+  const error = element('p', 'error');
+  error.setAttribute('role', 'alert');
+  form.append(error);
+  const actions = element('div', 'actions');
+  const submit = element('button', 'button primary', t().create);
+  submit.type = 'submit';
+  actions.append(
+    button(t().cancel, () => d.dialog.close()),
+    submit,
+  );
+  form.append(actions);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    try {
+      const primary = languageTag(language.value.trim());
+      const selected = columns.value
+        .split(',')
+        .map((code) => code.trim())
+        .filter(Boolean)
+        .map(languageTag);
+      if (selected.length > 7 || new Set([primary, ...selected]).size !== selected.length + 1) throw new Error('INVALID_FILE');
+      const project = projectFromText(name.value, text.value, primary);
+      project.columnLanguages = [primary, ...selected];
+      library.settings.showTranslation = selected.length > 0;
+      importProjects([project]);
+      d.dialog.close();
+    } catch (e) {
+      error.textContent = errorMessage(e);
+    }
+  });
+  d.body.append(form);
+  d.dialog.showModal();
+  name.focus();
+}
+function showGuide(): void {
+  showPronunciationGuide(library.settings.locale);
+}
+function range(label: string, key: 'fontSize' | 'ipaFontSize' | 'wpm' | 'rate' | 'pauseMultiplier', min: number, max: number, step: number): HTMLElement {
+  const control = element('input');
+  control.type = 'range';
+  control.min = String(min);
+  control.max = String(max);
+  control.step = String(step);
+  control.value = String(library.settings[key]);
+  const out = element('output', '', control.value);
+  const wrapper = element('div', 'range-control');
+  wrapper.append(control, out);
+  control.addEventListener('input', () => {
+    library.settings[key] = Number(control.value);
+    out.value = control.value;
+    document.documentElement.style.setProperty('--reading-size', library.settings.fontSize + 'px');
+    document.documentElement.style.setProperty('--ipa-size', library.settings.ipaFontSize + 'px');
+    resizePhraseFields();
+    persist();
+    if (playing) schedule();
+  });
+  return labelled(label, wrapper);
+}
+function move(direction: number): void {
+  const rows = visiblePhrases();
+  const at = rows.findIndex((q) => q.id === focusedId);
+  const next = rows[at + direction];
+  if (!next) {
+    if (playing) {
+      stop();
+      renderReader();
+    }
+    return;
+  }
+  focusedId = next.id;
+  syncNavigation(playing ? 'replace' : 'push');
+  renderReader();
+  highlightRows(library.settings.scrollToPhrase);
+  if (playing) schedule();
+}
+function highlightRows(scroll = true): void {
+  for (const row of document.querySelectorAll<HTMLElement>('.phrase-row')) row.classList.toggle('selected', row.dataset.id === focusedId);
+  if (scroll) document.querySelector<HTMLElement>('.phrase-row.selected')?.scrollIntoView({ behavior: 'instant', block: 'nearest' });
+}
+function schedule(): void {
+  clearTimeout(timer);
+  const q = focused();
+  if (!q || !playing) return;
+  timer = setTimeout(() => move(1), durationMs(q.text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier));
+}
+function toggleTimer(): void {
+  if (playing) stop();
+  else {
+    stop();
+    playing = true;
+    schedule();
+  }
+  renderReader();
+}
+function listen(): void {
+  const q = focused();
+  const p = current();
+  if (!q || !p) return;
+  stop();
+  if (!('speechSynthesis' in window)) {
+    notify(t().noVoice);
+    renderReader();
+    return;
+  }
+  const voice = localVoice(speechSynthesis.getVoices(), p.language, p.dialect);
+  if (!voice) {
+    notify(t().noVoice);
+    renderReader();
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(q.text);
+  utterance.voice = voice;
+  utterance.lang = voice.lang;
+  utterance.rate = library.settings.rate;
+  voiceSpeaking = true;
+  utterance.onend = () => {
+    voiceSpeaking = false;
+    renderReader();
+  };
+  utterance.onerror = () => {
+    voiceSpeaking = false;
+    notify(t().noVoice);
+    renderReader();
+  };
+  speechSynthesis.speak(utterance);
+  renderReader();
+}
+function renderReader(): void {
+  const host = document.querySelector('#reader');
+  if (!host) return;
+  host.replaceChildren();
+  const q = focused();
+  const p = current();
+  if (!q || !p) return;
+  readerView(host, {
+    project: p,
+    phrase: q,
+    copy: t(),
+    playing,
+    voiceSpeaking,
+    focusMode,
+    showTranslation: library.settings.showTranslation,
+    locale: library.settings.locale,
+    move,
+    timer: toggleTimer,
+    listen: () => {
+      if (voiceSpeaking) {
+        stop();
+        renderReader();
+      } else listen();
+    },
+    focus: () => {
+      focusMode = !focusMode;
+      syncNavigation('push');
+      render();
+    },
+  });
+}
+async function generate(): Promise<void> {
+  const p = current();
+  if (!p || busy) return;
+  const codes = projectColumns(p).filter(engineLanguage);
+  const tasks = codes.map((code) => ({
+    code,
+    dialect: (code === p.language ? p.dialect : dialects[code][0]!) as Dialect,
+    rows: p.phrases
+      .filter((q) => {
+        const v = phraseVersion(p, q, code);
+        return v.ipaStatus !== 'reviewed' && v.text.trim();
+      })
+      .map((q) => ({ id: q.id, text: phraseVersion(p, q, code).text })),
+  }));
+  if (!tasks.some((task) => task.rows.length)) return;
+  stop();
+  const snapshot = structuredClone(p);
+  busy = true;
+  generatedCount = 0;
+  generationTotal = tasks.reduce((count, task) => count + task.rows.length, 0);
+  render();
+  try {
+    const results: { id: string; code: string; ipa: string }[] = [];
+    for (const task of tasks) {
+      for (let at = 0; at < task.rows.length; at += 40) {
+        const rows = task.rows.slice(at, at + 40);
+        const res = await fetch('/api/ipa', {
+          signal: AbortSignal.timeout(45000),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texts: rows.map((q) => q.text), language: task.code, dialect: task.dialect } satisfies IpaRequest),
+        });
+        const data = (await res.json()) as IpaResponse;
+        if (!res.ok) throw new Error(data.error ?? 'ENGINE_FAILED');
+        if (!Array.isArray(data.ipa) || data.ipa.length !== rows.length || data.ipa.some((x) => typeof x !== 'string')) throw new Error('ENGINE_FAILED');
+        rows.forEach((row, i) => results.push({ id: row.id, code: task.code, ipa: data.ipa![i]! }));
+        generatedCount = results.length;
+        const progress = document.querySelector<HTMLProgressElement>('#generation-progress');
+        if (progress) progress.value = generatedCount;
+        const label = document.querySelector('#generation-label');
+        if (label) label.textContent = t().generating + ' ' + generatedCount + '/' + generationTotal;
+      }
+    }
+    const live = library.projects.find((q) => q.id === snapshot.id);
+    if (!live || JSON.stringify(live) !== JSON.stringify(snapshot)) throw new Error('STALE');
+    checkpoint();
+    for (const result of results) {
+      const phrase = live.phrases.find((q) => q.id === result.id)!;
+      const version = editableVersion(live, phrase, result.code);
+      version.ipa = result.ipa;
+      version.ipaStatus = 'draft';
+    }
+    persist();
+    notify(t().ready);
+  } catch (error) {
+    notify(errorMessage(error));
+  } finally {
+    busy = false;
+    render();
+  }
+}
+
+function renderRows(): void {
+  if (!rowsHost) return;
+  rowsHost.replaceChildren();
+  ensureFocus();
+  syncNavigation();
+  const p = current();
+  if (!p) return;
+  const headings = document.querySelector<HTMLElement>('.column-headings');
+  if (headings) headings.hidden = Boolean(p.columnLanguages && library.settings.showTranslation);
+  const rows = visiblePhrases();
+  if (!rows.length) {
+    rowsHost.append(element('p', 'empty-search', t().emptySearch));
+    renderReader();
+    return;
+  }
+  editorRows(rowsHost, {
+    project: p,
+    rows,
+    focusedId,
+    focused: () => focusedId,
+    showTranslation: library.settings.showTranslation,
+    locale: library.settings.locale,
+    busy,
+    copy: t(),
+    checkpoint,
+    changed: persist,
+    reader: renderReader,
+    select: (q) => {
+      stop();
+      focusedId = q.id;
+      syncNavigation('push');
+      renderReader();
+      highlightRows();
+    },
+    remove: (q) => {
+      if (p.phrases.length === 1) return;
+      checkpoint();
+      p.phrases = p.phrases.filter((v) => v.id !== q.id);
+      ensureFocus();
+      persist();
+      renderRows();
+      renderReader();
+    },
+  });
+  renderReader();
+}
+function render(): void {
+  ensureFocus();
+  const activeControl = document.activeElement?.closest<HTMLElement>('.custom-select');
+  const controlIndex = activeControl ? [...document.querySelectorAll('.custom-select')].indexOf(activeControl) : -1;
+  const copy = t();
+  document.documentElement.lang = library.settings.locale;
+  document.title = 'Text IPA · ' + copy.guide;
+  const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+  if (description) description.content = copy.tagline + ' ' + copy.about;
+  document.documentElement.dataset.theme = library.settings.theme;
+  document.documentElement.style.setProperty('--reading-size', library.settings.fontSize + 'px');
+  document.documentElement.style.setProperty('--ipa-size', library.settings.ipaFontSize + 'px');
+  document.body.classList.toggle('focus-mode', focusMode);
+  app.setAttribute('aria-busy', String(busy));
+  app.replaceChildren();
+  const header = headerView({
+    settings: library.settings,
+    copy,
+    locale: (value) => {
+      stop();
+      library.settings.locale = value;
+      message = '';
+      persist();
+      render();
+    },
+    theme: (value) => {
+      library.settings.theme = value;
+      persist();
+      render();
+    },
+    preference: (key, value) => {
+      library.settings[key] = value;
+      persist();
+      applyShellSettings(library.settings, t());
+      if (key === 'showTranslation') renderRows();
+    },
+    guide: showGuide,
+  });
+  app.append(header);
+  const notice = element('div', 'notice', message);
+  notice.id = 'notice';
+  notice.setAttribute('role', 'status');
+  notice.hidden = !message;
+  app.append(notice);
+  const layout = element('div', 'layout');
+  const sidebar = sidebarView({
+    library,
+    copy,
+    busy,
+    engine: engineChecking ? copy.loading : engineAvailable ? copy.localEngine : copy.noEngine,
+    toggle: () => {
+      library.settings.sidebarCollapsed = !library.settings.sidebarCollapsed;
+      persist();
+      applyShellSettings(library.settings, t());
+    },
+    create: newProject,
+    import: chooseImport,
+    activate,
+    examples: () => showExamples(copy, chooseImport, (error) => notify(errorMessage(error))),
+    export: () => {
+      const project = current();
+      if (project) download(project.title + '.json', JSON.stringify(project, null, 2) + '\n', 'application/json');
+    },
+  });
+  const p = current();
+  const workspace = workspaceView({
+    project: p,
+    library,
+    copy,
+    block: selectedBlock,
+    query: search,
+    busy,
+    engineAvailable,
+    canUndo: editHistory.length > 0,
+    generatedCount,
+    generationTotal,
+    create: newProject,
+    guide: showGuide,
+    columns: () => {
+      if (!p) return;
+      columnSettings(p, copy, library.settings.locale, (updated) => {
+        stop();
+        checkpoint();
+        library.projects = library.projects.map((project) => (project.id === updated.id ? updated : project));
+        library.settings.showTranslation = true;
+        persist();
+        render();
+      });
+    },
+    checkpoint,
+    changed: persist,
+    generate,
+    undo,
+    range,
+    dialectLabel,
+    download,
+    remove: () => {
+      if (!p) return;
+      stop();
+      checkpoint();
+      library.projects = library.projects.filter((q) => q.id !== p.id);
+      library.activeId = library.projects[0]?.id ?? null;
+      selectedBlock = '';
+      focusedId = null;
+      search = '';
+      persist();
+      render();
+    },
+    dialect: (value) => {
+      if (!p) return;
+      checkpoint();
+      p.dialect = value;
+      p.phrases.forEach((q) => {
+        q.ipa = '';
+        q.ipaStatus = 'empty';
+      });
+      persist();
+      render();
+    },
+    jumpBlock: (value) => {
+      if (!p) return;
+      stop();
+      selectedBlock = value;
+      search = '';
+      const input = document.querySelector<HTMLInputElement>('#search');
+      if (input) input.value = '';
+      focusedId = p.phrases.find((q) => !value || q.block === value)?.id ?? null;
+      syncNavigation('push');
+      renderRows();
+      highlightRows();
+    },
+    search: (value, history) => {
+      stop();
+      search = value;
+      ensureFocus();
+      syncNavigation(history);
+      renderRows();
+    },
+    add: () => {
+      if (!p) return;
+      checkpoint();
+      const q: Phrase = {
+        id: crypto.randomUUID(),
+        block: selectedBlock,
+        text: copy.addText,
+        ipa: '',
+        ipaStatus: 'empty',
+        pauseMs: 1000,
+        done: false,
+        note: '',
+      };
+      p.phrases.push(q);
+      focusedId = q.id;
+      search = '';
+      persist();
+      render();
+      highlightRows();
+      const added = document.querySelector<HTMLElement>('.phrase-row.selected');
+      added?.classList.add('just-added');
+      added?.querySelector<HTMLTextAreaElement>('.phrase-text')?.focus({ preventScroll: true });
+    },
+  });
+  rowsHost = workspace.rows;
+  const main = workspace.main;
+  layout.append(sidebar, main);
+  app.append(layout);
+  app.append(footerView(copy, storageFailed, showGuide));
+  applyShellSettings(library.settings, copy);
+  watchHeader(header);
+  if (!p) syncNavigation();
+  updateNavigationControls();
+  if (p) {
+    renderRows();
+    updateStats();
+  }
+  if (controlIndex >= 0)
+    document.querySelectorAll<HTMLElement>('.custom-select')[controlIndex]?.querySelector<HTMLButtonElement>('.select-trigger')?.focus({ preventScroll: true });
+}
+function dialectLabel(d: Dialect): string {
+  return { 'es-ES': t().esSpain, 'es-419': t().esSeseo, 'en-GB': t().enGb, 'en-US': t().enUs, 'ru-RU': t().ruRu }[d] ?? d;
+}
+document.addEventListener('keydown', (e) => {
+  if (
+    document.querySelector('dialog[open]') ||
+    (e.target instanceof HTMLElement && (e.target.matches('input,textarea,select,button,summary,a') || e.target.isContentEditable))
+  )
+    return;
+  if (e.code === 'Space' && current()) {
+    e.preventDefault();
+    toggleTimer();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    move(-1);
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    move(1);
+  } else if (e.key === 'Escape' && focusMode) {
+    focusMode = false;
+    syncNavigation('push');
+    render();
+  }
+});
+window.addEventListener('beforeunload', (e) => {
+  if (storageFailed && library.projects.length) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+window.addEventListener('popstate', (event) => {
+  navigation.restore(event.state);
+  restoreNavigation();
+  render();
+});
+restoreNavigation();
+render();
+setupPwa(() => library.settings.locale, notify);
+void fetch('/api/health', { signal: AbortSignal.timeout(10000) })
+  .then((r) => r.json() as Promise<HealthResponse>)
+  .then((data) => {
+    engineAvailable = data.engineAvailable === true;
+    engineChecking = false;
+    render();
+  })
+  .catch(() => {
+    engineAvailable = false;
+    engineChecking = false;
+    render();
+  });
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+void document.fonts.ready.then(() => resizePhraseFields());
+document.fonts.addEventListener('loadingdone', () => resizePhraseFields());
+window.addEventListener('resize', () => resizePhraseFields());

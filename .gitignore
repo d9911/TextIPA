@@ -1,0 +1,39 @@
+node_modules/
+/examples/cable-es.json
+dist/
+coverage/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+yarn.lock
+# Keep npm dependency versions reproducible.
+!package-lock.json
+public/LICENSE
+
+# Local browser verification artifacts.
+output/playwright/
+
+# Generated diagnostics, local caches and editor/OS metadata.
+output/
+.cache/
+.vite/
+*.tsbuildinfo
+.idea/
+.vscode/
+Icon[[:cntrl:]]
+Thumbs.db
+Desktop.ini
+# Personal recordings and downloaded archives do not belong in the source repository.
+*.wav
+*.mp3
+*.m4a
+*.mp4
+*.mov
+*.zip
+*.tar.gz
+
+# Repeated QA screenshots are local diagnostics; keep the two README JPEGs.
+docs/images/navigation-*.png
+docs/images/text-ipa-*.png

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+LICENSE
+public/LICENSE
+examples/
+package-lock.json
+docs/images/
+
+output/playwright/
+
+public/fonts/charis/OFL.txt

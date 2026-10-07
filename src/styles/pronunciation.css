@@ -1,0 +1,252 @@
+.guide-dialog {
+  max-width: 1000px;
+}
+.guide-intro {
+  max-width: 78ch;
+}
+.guide-controls {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 20px;
+  align-items: end;
+  margin: 24px 0;
+}
+.guide-controls input[type='search'] {
+  flex: 1;
+  min-width: 220px;
+}
+.guide-overflow {
+  overflow-x: auto;
+}
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.guide-table th,
+.guide-table td {
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.guide-table thead th {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.guide-table tbody th {
+  min-width: 80px;
+  font-weight: 500;
+}
+.guide-table td:nth-child(2) {
+  width: 20%;
+}
+.guide-table td:last-child {
+  width: 43%;
+}
+.guide-table p {
+  margin: 7px 0 0;
+  font-size: 13px;
+}
+.guide-example {
+  font-family: 'Charis', 'Charis SIL', serif;
+  font-size: 17px;
+}
+.guide-source {
+  display: block;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.guide-dialog {
+  width: min(1100px, calc(100vw - 32px));
+  max-width: 1100px;
+  max-height: 88dvh;
+  overflow: hidden;
+  border-radius: 20px;
+}
+.guide-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.guide-dialog .dialog-heading {
+  flex: 0 0 auto;
+  padding: 20px 24px;
+  background: var(--surface);
+}
+.guide-dialog .dialog-heading h2 {
+  font-size: 22px;
+}
+.guide-dialog .dialog-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 20px 24px 28px;
+}
+.guide-intro {
+  background: var(--green-soft);
+  border-radius: 12px;
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 0;
+}
+.guide-practice {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.guide-controls {
+  gap: 14px;
+  align-items: end;
+  margin: 22px 0;
+}
+.guide-controls .field {
+  margin: 0;
+}
+.guide-controls input[type='search'] {
+  height: 44px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.guide-controls .select-trigger {
+  height: 44px;
+  box-sizing: border-box;
+}
+.guide-search .field-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.guide-table {
+  table-layout: fixed;
+}
+.guide-table th,
+.guide-table td {
+  padding: 18px 12px;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.guide-table thead th:first-child {
+  width: 11%;
+}
+.guide-table thead th:nth-child(2) {
+  width: 20%;
+}
+.guide-table thead th:nth-child(3) {
+  width: 27%;
+}
+.guide-table tbody th {
+  font-family: 'Charis', 'Charis SIL', serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+.guide-example {
+  font-family: 'Charis', 'Charis SIL', serif;
+  font-size: 19px;
+  letter-spacing: normal;
+}
+.guide-transcription {
+  display: inline-block;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  font-weight: 400;
+}
+.guide-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--panel) 45%, transparent);
+}
+.guide-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.guide-source {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-decoration: none;
+  background: var(--panel);
+  font-size: 12px;
+}
+@media (max-width: 650px) {
+  .guide-dialog {
+    width: calc(100vw - 20px);
+    border-radius: 16px;
+    max-height: 92dvh;
+  }
+  .guide-dialog .dialog-heading {
+    padding: 16px;
+    gap: 12px;
+  }
+  .guide-dialog .dialog-heading h2 {
+    font-size: 19px;
+  }
+  .guide-dialog .dialog-body {
+    padding: 16px;
+  }
+  .guide-intro {
+    padding: 12px;
+  }
+  .guide-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .guide-controls input[type='search'] {
+    min-width: 0;
+    width: 100%;
+  }
+  .guide-table,
+  .guide-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .guide-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .guide-table tbody tr {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  .guide-table tbody th {
+    grid-row: 1 / 4;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    text-align: left;
+    font-size: 28px;
+  }
+  .guide-table td {
+    width: auto !important;
+    display: block;
+    grid-column: 2;
+    padding: 0;
+    border: 0;
+  }
+  .guide-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .guide-example {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "text-ipa",
+  "version": "0.1.0",
+  "description": "Local multilingual IPA voiceover rehearsal workspace written in TypeScript",
+  "keywords": [
+    "ipa",
+    "phonetics",
+    "pronunciation",
+    "voiceover",
+    "rehearsal",
+    "reader",
+    "pwa",
+    "typescript"
+  ],
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "author": {
+    "name": "Denis Gutsuliak (d9911.org)",
+    "email": "admin@d9911.org",
+    "url": "https://t.me/d9911/"
+  },
+  "contributors": [
+    {
+      "name": "Denis Gutsuliak",
+      "email": "admin@d9911.org",
+      "url": "https://t.me/d9911/"
+    }
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "dev": "node scripts/start.ts",
+    "start": "node scripts/start.ts --production",
+    "init": "node scripts/start.ts --init",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test && npm run format:check",
+    "build": "npm run typecheck && node scripts/build.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vite": "8.3.2",
+    "typescript": "7.0.2",
+    "prettier": "3.9.9",
+    "@types/node": "24.19.1"
+  }
+}

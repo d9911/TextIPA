@@ -1,0 +1,245 @@
+{
+  "id": "kolobok-es-ru",
+  "title": "Колобок · ES / EN / RU",
+  "language": "es",
+  "dialect": "es-ES",
+  "translationLanguage": "ru",
+  "updatedAt": "2026-10-07T15:00:00.000Z",
+  "phrases": [
+    {
+      "id": "kolobok-1",
+      "block": "Колобок · короткий пересказ",
+      "text": "Érase una vez un anciano y una anciana que vivían en una casita junto al bosque.",
+      "translation": "Жили-были старик со старухой в маленьком домике у леса.",
+      "ipa": "[ˈeɾase ˈuna ˈβeθ ˈun anˈθjano i ˈuna anˈθjana ke βiˈβian en ˈuna kaˈsita ˈxunto al ˈβoske]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "Once upon a time, an old man and an old woman lived in a little house beside the forest.",
+          "ipa": "[wˈʌns əpˌɒn ɐ tˈaɪm ɐn ˈəʊld mˈan and ɐn ˈəʊld wˈʊmən lˈɪvd ɪn ɐ lˈɪtəl hˈaʊs bɪsˌaɪd ðə fˈɒɹɪst]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Жили-были старик со старухой в маленьком домике у леса.",
+          "ipa": "[ʒˈyɭʲɪbˌyɭʲɪ starʲˈik sˈo starˈuxʌj v mˈɑɭʲinkʌm dˈomʲikʲi u ɭʲˈesa]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-2",
+      "block": "Колобок · короткий пересказ",
+      "text": "Un día, la anciana reunió un poco de harina y preparó un pan redondo llamado Kolobok.",
+      "translation": "Однажды старуха собрала немного муки и испекла круглый хлебец — Колобок.",
+      "ipa": "[ˈun ˈdia la anˈθjana reu̯ˈnjo ˈum ˈpoko ðe aˈɾina i pɾepaˈɾo ˈum ˈpan reˈðondo ʝaˈmaðo koloˈβok]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "One day, the old woman gathered a little flour and baked a round loaf called Kolobok.",
+          "ipa": "[wˈɒn dˈeɪ ðɪ ˈəʊld wˈʊmən ɡˈaðəd ɐ lˈɪtəl flˈaʊə and bˈeɪkt ɐ ɹˈaʊnd lˈəʊf kˈɔːld kˈɒləbˌɒk]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Однажды старуха собрала немного муки и испекла круглый хлебец — Колобок.",
+          "ipa": "[ʌdnˈɑʒdy starˈuxa sʌbraɭˈɑ nʲimnˈoɡʌ mˈukʲɪ ɪ ɪspʲikɭˈɑ krˈuɡɭyj xɭʲˈebʲits kʌɭʌbˈok]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-3",
+      "block": "Колобок · короткий пересказ",
+      "text": "Lo dejó en la ventana para que se enfriara, pero Kolobok saltó al camino.",
+      "translation": "Она положила его на окно остывать, но Колобок прыгнул на дорожку.",
+      "ipa": "[lo ðeˈxo en la βenˈtana paɾa ke se emfɾiˈaɾa peɾo koloˈβok salˈto al kaˈmino]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "She left it on the windowsill to cool, but Kolobok jumped onto the path.",
+          "ipa": "[ʃiː lˈɛft ɪt ɒnðə wˈɪndəʊsˌɪl tə kˈuːl bˌʌt kˈɒləbˌɒk dʒˈʌmpt ˌɒntʊ ðə pˈaθ]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Она положила его на окно остывать, но Колобок прыгнул на дорожку.",
+          "ipa": "[ʌnˈɑ pʌɭʌʒˈyɭa jɪvˈo nə ʌknˈo ʌstyvˈɑtʲ no kʌɭʌbˈok prˈyɡnuɭ nə dʌrˈoʃku]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-4",
+      "block": "Колобок · короткий пересказ",
+      "text": "Rodó entre los árboles y se encontró con una liebre.",
+      "translation": "Он покатился между деревьями и встретил зайца.",
+      "ipa": "[roˈðo entɾe los ˈaɾβoles i se enkonˈtɾo kon ˈuna liˈeβɾe]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "He rolled between the trees and met a hare.",
+          "ipa": "[hiː ɹˈəʊld bɪtwˌiːn ðə tɹˈiːz and mˈɛt ɐ hˈeə]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Он покатился между деревьями и встретил зайца.",
+          "ipa": "[ˈon pʌkatʲˈiɭsʲʌ mʲˈeʒdu dʲirʲˈevjjamʲɪ ɪ fstrʲˈetʲiɭ zˈɑjtsa]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-5",
+      "block": "Колобок · короткий пересказ",
+      "text": "La liebre quiso comérselo, pero Kolobok cantó una canción y siguió rodando.",
+      "translation": "Заяц хотел его съесть, но Колобок спел песенку и покатился дальше.",
+      "ipa": "[la liˈeβɾe ˈkiso koˈmeɾselo peɾo koloˈβok kanˈto ˈuna kanˈθjon i siˈɣjo roˈðando]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "The hare wanted to eat him, but Kolobok sang a song and rolled away.",
+          "ipa": "[ðə hˈeə wˈɒntɪd tʊ ˈiːt hˌɪm bˌʌt kˈɒləbˌɒk sˈaŋ ɐ sˈɒŋ and ɹˈəʊld ɐwˈeɪ]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Заяц хотел его съесть, но Колобок спел песенку и покатился дальше.",
+          "ipa": "[zˈɑjats xʌtʲˈeɭ jɪvˈo sjjˈestʲ no kʌɭʌbˈok spʲˈeɭ pʲˈesʲinku ɪ pʌkatʲˈiɭsʲʌ dˈɑɭʃy]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-6",
+      "block": "Колобок · короткий пересказ",
+      "text": "Después se encontró con un lobo y un oso, y también logró escapar de ellos.",
+      "translation": "Потом он встретил волка и медведя и от них тоже сумел убежать.",
+      "ipa": "[desˈpwes se enkonˈtɾo kon ˈun ˈloβo i ˈun ˈoso i tamˈbjen loˈɣɾo eskaˈpaɾ ðe ˈeʝos]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "Then he met a wolf and a bear, and he managed to escape from them too.",
+          "ipa": "[ðˈɛn hiː mˈɛt ɐ wˈʊlf and ɐ bˈeə and hiː mˈanɪdʒd tʊ ɛskˈeɪp fɹɒm ðˌɛm tˈuː]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Потом он встретил волка и медведя и от них тоже сумел убежать.",
+          "ipa": "[pˈotʌm ˈon fstrʲˈetʲiɭ vˈoɭka ɪ mʲidvʲˈedʲʌ ɪ ot nʲˈix tˈoʒy sumʲˈeɭ ubʲiʒˈɑtʲ]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-7",
+      "block": "Колобок · короткий пересказ",
+      "text": "Al llegar al río, vio a una zorra que lo escuchaba con una sonrisa.",
+      "translation": "Когда он добрался до реки, то увидел лису, которая слушала его с улыбкой.",
+      "ipa": "[al ʝeˈɣaɾ al ˈrio ˈbjo a ˈuna ˈθora ke lo eskuˈt͡ʃaβa kon ˈuna sonˈrisa]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "When he reached the river, he saw a fox listening with a smile.",
+          "ipa": "[wˌɛn hiː ɹˈiːtʃt ðə ɹˈɪvə hiː sˈɔː ɐ fˈɒks lˈɪsənɪŋ wɪð ɐ smˈaɪl]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Когда он добрался до реки, то увидел лису, которая слушала его с улыбкой.",
+          "ipa": "[kʌɡdˈɑ ˈon dʌbrˈɑɭsʲʌ dˈo rʲˈekʲɪ tˈo uvʲˈidʲiɭ ɭʲˈisu kʌtˈorʌja sɭˈuʃʌɭa jɪvˈo s uɭˈypkʌj]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-8",
+      "block": "Колобок · короткий пересказ",
+      "text": "Tu canción es preciosa, dijo la zorra, pero no te oigo bien. Acércate un poco.",
+      "translation": "«Твоя песенка чудесная, — сказала лиса, — но я плохо тебя слышу. Подойди поближе».",
+      "ipa": "[tu kanˈθjon ˈes pɾeˈθjosa ˈdixo la ˈθora peɾo ˈno te ˈoi̯ɣo ˈβjen aˈθeɾkate ˈum ˈpoko]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "Your song is lovely, said the fox, but I cannot hear you very well. Come a little closer.",
+          "ipa": "[jɔː sˈɒŋ ɪz lˈʌvli sˈɛd ðə fˈɒks bˌʌt aɪ kˈanɒt hˈiə juː vˈɛɹi wˈɛl kˈʌm ɐ lˈɪtəl klˈəʊsə]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "«Твоя песенка чудесная, — сказала лиса, — но я плохо тебя слышу. Подойди поближе».",
+          "ipa": "[tvʌˈja pʲˈesʲinka tʃʲudʲˈesnʌja skazˈɑɭa ɭʲˈisa no ˈja pɭˈoxʌ tʲibʲˈɑ sɭˈyʃu pʌdʌjdʲˈɪ pʌbɭʲˈiʒy]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-9",
+      "block": "Колобок · короткий пересказ",
+      "text": "Kolobok saltó sobre su nariz para cantar más fuerte, y la zorra se lo comió.",
+      "translation": "Колобок прыгнул ей на нос, чтобы спеть погромче, и лиса его съела.",
+      "ipa": "[koloˈβok salˈto soβɾe su naˈɾiθ paɾa kanˈtaɾ ˈmas ˈfweɾte i la ˈθora se lo koˈmjo]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "Kolobok jumped onto her nose to sing louder, and the fox ate him.",
+          "ipa": "[kˈɒləbˌɒk dʒˈʌmpt ˌɒntʊ hɜː nˈəʊz tə sˈɪŋ lˈaʊdə and ðə fˈɒks ˈeɪt hˌɪm]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Колобок прыгнул ей на нос, чтобы спеть погромче, и лиса его съела.",
+          "ipa": "[kʌɭʌbˈok prˈyɡnuɭ jˈej nə nˈos ʃtˈoby spʲˈetʲ pʌɡrˈomtʃʲi ɪ ɭʲˈisa jɪvˈo sjjˈeɭa]",
+          "ipaStatus": "draft"
+        }
+      }
+    },
+    {
+      "id": "kolobok-10",
+      "block": "Колобок · короткий пересказ",
+      "text": "Así termina este cuento: escapar de un peligro no significa que podamos confiar en cualquiera.",
+      "translation": "Так заканчивается сказка: спастись от опасности ещё не значит, что можно доверять каждому.",
+      "ipa": "[aˈsi teɾˈmina ˈeste ˈkwento eskaˈpaɾ ðe ˈum peˈliɣɾo ˈno siɡniˈfika ke poˈðamos konˈfjaɾ en kwalˈkjeɾa]",
+      "ipaStatus": "draft",
+      "pauseMs": 1500,
+      "done": false,
+      "note": "",
+      "translations": {
+        "en": {
+          "text": "That is how this tale ends: escaping danger does not mean we can trust everyone.",
+          "ipa": "[ðat ɪz hˌaʊ ðɪs tˈeɪl ˈɛndz ɛskˈeɪpɪŋ dˈeɪndʒə dʌznˌɒt mˈiːn wiː kan tɹˈʌst ˈɛvɹɪwˌɒn]",
+          "ipaStatus": "draft"
+        },
+        "ru": {
+          "text": "Так заканчивается сказка: спастись от опасности ещё не значит, что можно доверять каждому.",
+          "ipa": "[tˈɑk zakˈɑntʃʲivʌjitsʌ skˈɑska spasʲtʲˈisʲ ot ʌpˈɑsnʌsʲtʲɪ jɪɕˈɵ nʲɪ znˈɑtʃʲit ʃto mˈoʒnʌ dʌvʲirʲˈɑtʲ kˈɑʒdʌmu]",
+          "ipaStatus": "draft"
+        }
+      }
+    }
+  ],
+  "columnLanguages": [
+    "es",
+    "en",
+    "ru"
+  ]
+}
