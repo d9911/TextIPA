@@ -5,6 +5,7 @@ import { projectColumns, phraseVersion, languageLabel, readingLanguage } from '.
 import type { Language } from '../../types/domain.ts';
 import type { Settings } from '../../types/domain.ts';
 import { pronunciationText } from '../../features/pronunciation/annotated-text.ts';
+import { stageDirectionView } from '../../features/pronunciation/stage-direction.ts';
 import { tooltip } from '../../shared/ui/tooltip.ts';
 interface ReaderOptions {
   project: Project;
@@ -12,6 +13,8 @@ interface ReaderOptions {
   copy: Copy;
   playing: boolean;
   timerTotal: number;
+  timerPaused: boolean;
+  paceControl: HTMLElement;
   timerRemaining?: number;
   voiceSpeaking: boolean;
   focusMode: boolean;
@@ -57,15 +60,19 @@ export function readerView(host: Element, options: ReaderOptions): void {
       content.append(translation);
     }
   }
+  const direction = stageDirectionView(phraseVersion(p, q, selectedLanguage).stageDirection ?? q.stageDirection, copy);
+  if (direction) content.prepend(direction);
   const controls = element('div', 'reader-controls');
   const first = button('⇤', () => options.jump('first'), 'icon-button', copy.first);
   const last = button('⇥', () => options.jump('last'), 'icon-button', copy.last);
   first.disabled = number === 1;
   last.disabled = number === p.phrases.length;
+  const autoAdvance = button(playing ? copy.stop : copy.start, options.timer, 'button primary');
+  autoAdvance.setAttribute('aria-pressed', String(playing));
   controls.append(
     first,
     button('←', () => options.move(-1), 'icon-button', copy.previous),
-    button(playing ? copy.stop : copy.start, options.timer, 'button primary'),
+    autoAdvance,
     button('→', () => options.move(1), 'icon-button', copy.next),
     last,
     button(voiceSpeaking ? copy.stopVoice : copy.listen, options.listen),
@@ -77,10 +84,13 @@ export function readerView(host: Element, options: ReaderOptions): void {
   const progress = element('progress');
   progress.id = 'timer-progress';
   progress.max = options.timerTotal;
-  progress.value = playing ? options.timerTotal - (options.timerRemaining ?? options.timerTotal) : 0;
+  progress.value = playing || options.timerPaused ? options.timerTotal - (options.timerRemaining ?? options.timerTotal) : 0;
   progress.setAttribute('aria-label', copy.timerRemaining);
   clock.append(element('span', '', playing ? copy.timerRemaining : copy.timerReady), time, progress);
-  host.append(heading, content, clock, controls, element('p', 'timer-note', copy.timerNote), element('p', 'voice-note', copy.voiceInfo));
+  options.paceControl.classList.add('reader-pace');
+  // Plain reading scripts do not need an empty transcription prompt.
+  for (const ipa of content.querySelectorAll('.reader-ipa')) if (ipa.textContent === copy.blankIpa) ipa.remove();
+  host.append(heading, content, clock, controls, options.paceControl, element('p', 'timer-note', copy.timerNote), element('p', 'voice-note', copy.voiceInfo));
   for (const control of controls.querySelectorAll('button')) {
     const text = control.getAttribute('aria-label');
     tooltip(control, host as HTMLElement, {

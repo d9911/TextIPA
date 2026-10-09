@@ -1,3 +1,4 @@
+import { defaultSettings } from '../../domain/preferences.ts';
 import type { Settings } from '../../types/domain.ts';
 import type { Copy } from '../../i18n/locales.ts';
 import { button, element, labelled, select } from '../../shared/ui/controls.ts';
@@ -10,6 +11,7 @@ export function preferenceMenu(
   change: (key: ShellPreference, value: boolean) => void,
   guide: () => void,
   display: (value: Settings['ipaDisplay']) => void,
+  directionColor: (value: string) => void,
 ): HTMLElement[] {
   const content = element('div', 'preferences-content');
   const heading = element('div', 'preferences-heading');
@@ -38,6 +40,19 @@ export function preferenceMenu(
       ),
     ),
   );
+  const color = element('input');
+  color.type = 'color';
+  color.value = settings.stageDirectionColor;
+  color.addEventListener('input', () => directionColor(color.value));
+  const colorField = labelled(copy.stageDirectionColor, color);
+  colorField.append(element('p', 'muted small', copy.stageDirectionHint));
+  colorField.append(
+    button(copy.resetDirectionColor, () => {
+      color.value = defaultSettings.stageDirectionColor;
+      directionColor(color.value);
+    }),
+  );
+  content.append(colorField);
   const guideButton = button(
     copy.guide,
     () => {

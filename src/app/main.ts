@@ -33,6 +33,7 @@ import { restoreExamplePronunciation } from '../domain/example-pronunciation.ts'
 import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVersion, readingLanguage, pronunciationDialect } from '../domain/columns.ts';
 import { ipaWords, validWordIpa, displayWordIpa } from '../domain/word-ipa.ts';
 import { requestWordAnnotations } from '../features/pronunciation/word-annotations.ts';
+import { ReadingTimer } from '../domain/reading-timer.ts';
 import { columnSettings } from '../features/preferences/columns-dialog.ts';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -76,7 +77,7 @@ let focusMode = false;
 let playing = false;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let timerTick: ReturnType<typeof setInterval> | undefined;
-let timerDeadline = 0;
+const readingTimer = new ReadingTimer();
 let timerTotal = 0;
 let voiceSpeaking = false;
 const editHistory: string[] = [];
@@ -140,10 +141,11 @@ function errorMessage(error: unknown): string {
     )[code] ?? copy.error
   );
 }
-function stop(): void {
+function stop(reset = true): void {
   clearTimeout(timer);
   clearInterval(timerTick);
-  timerDeadline = 0;
+  if (reset) readingTimer.reset();
+  else readingTimer.pause(performance.now());
   playing = false;
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   voiceSpeaking = false;
@@ -380,6 +382,7 @@ function showGuide(): void {
 function range(label: string, key: 'fontSize' | 'ipaFontSize' | 'wpm' | 'rate' | 'pauseMultiplier', min: number, max: number, step: number): HTMLElement {
   const control = element('input');
   control.type = 'range';
+  control.dataset.readingSetting = key;
   control.min = String(min);
   control.max = String(max);
   control.step = String(step);
@@ -390,12 +393,19 @@ function range(label: string, key: 'fontSize' | 'ipaFontSize' | 'wpm' | 'rate' |
   control.addEventListener('input', () => {
     library.settings[key] = Number(control.value);
     out.value = control.value;
+    for (const sibling of document.querySelectorAll<HTMLInputElement>('input[data-reading-setting="' + key + '"]')) {
+      sibling.value = control.value;
+      const output = sibling.parentElement?.querySelector('output');
+      if (output) output.value = control.value;
+    }
     document.documentElement.style.setProperty('--reading-size', library.settings.fontSize + 'px');
     document.documentElement.style.setProperty('--ipa-size', library.settings.ipaFontSize + 'px');
     resizePhraseFields();
     persist();
     if (playing) schedule();
+    else readingTimer.reset();
   });
+  control.addEventListener('change', () => renderReader());
   return labelled(label, wrapper);
 }
 function move(direction: number): void {
@@ -409,29 +419,32 @@ function move(direction: number): void {
     }
     return;
   }
+  if (!playing) readingTimer.reset();
   focusedId = next.id;
   syncNavigation(playing ? 'replace' : 'push');
   if (playing) schedule();
   renderReader();
-  highlightRows(library.settings.scrollToPhrase);
+  highlightRows(!playing && library.settings.scrollToPhrase);
+  if (playing) document.querySelector('#reader')?.scrollIntoView({ behavior: 'instant', block: 'nearest' });
 }
 function highlightRows(scroll = true): void {
   for (const row of document.querySelectorAll<HTMLElement>('.phrase-row')) row.classList.toggle('selected', row.dataset.id === focusedId);
   if (scroll) document.querySelector<HTMLElement>('.phrase-row.selected')?.scrollIntoView({ behavior: 'instant', block: 'nearest' });
 }
-function schedule(): void {
+function schedule(resume = false): void {
   clearTimeout(timer);
   clearInterval(timerTick);
   const q = focused();
   if (!q || !playing) return;
   timerTotal = durationMs(phraseVersion(current()!, q, readingLanguage(current()!)).text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier);
-  timerDeadline = performance.now() + timerTotal;
-  timer = setTimeout(() => move(1), timerTotal);
+  const remaining = readingTimer.start(timerTotal, performance.now(), resume);
+  timerTotal = readingTimer.total;
+  timer = setTimeout(() => move(1), remaining);
   timerTick = setInterval(updateTimerDisplay, 100);
   updateTimerDisplay();
 }
 function updateTimerDisplay(): void {
-  const remaining = Math.max(0, timerDeadline - performance.now());
+  const remaining = readingTimer.remaining(performance.now());
   const label = document.querySelector('#timer-countdown');
   const progress = document.querySelector<HTMLProgressElement>('#timer-progress');
   if (label && playing) label.textContent = (remaining / 1000).toFixed(1) + ' ' + t().seconds;
@@ -442,6 +455,7 @@ function updateTimerDisplay(): void {
 }
 function jump(edge: 'first' | 'last'): void {
   if (search) {
+    readingTimer.reset();
     const rows = current()?.phrases ?? [];
     focusedId = (edge === 'first' ? rows[0] : rows.at(-1))?.id ?? null;
     search = '';
@@ -457,13 +471,15 @@ function jump(edge: 'first' | 'last'): void {
   move((edge === 'first' ? 0 : rows.length - 1) - at);
 }
 function toggleTimer(): void {
-  if (playing) stop();
+  if (playing) stop(false);
   else {
-    stop();
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    voiceSpeaking = false;
     playing = true;
-    schedule();
+    schedule(true);
   }
   renderReader();
+  document.querySelector('#reader')?.scrollIntoView({ behavior: 'instant', block: 'nearest' });
 }
 function listen(): void {
   const q = focused();
@@ -508,6 +524,7 @@ function renderReader(): void {
   const host = document.querySelector('#reader');
   if (!host) return;
   const active = document.activeElement;
+  const paceFocused = active instanceof HTMLInputElement && active.closest('.reader-pace') !== null;
   const controlLabel = active instanceof HTMLButtonElement && host.contains(active) ? active.getAttribute('aria-label') : null;
   host.replaceChildren();
   const q = focused();
@@ -518,10 +535,13 @@ function renderReader(): void {
     phrase: q,
     copy: t(),
     playing,
-    timerTotal: playing
-      ? timerTotal
-      : durationMs(phraseVersion(current()!, q, readingLanguage(current()!)).text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier),
-    timerRemaining: playing ? Math.max(0, timerDeadline - performance.now()) : undefined,
+    timerPaused: readingTimer.paused,
+    paceControl: range(t().pace + ' · ' + t().wpm, 'wpm', 60, 240, 5),
+    timerTotal:
+      playing || readingTimer.paused
+        ? timerTotal
+        : durationMs(phraseVersion(current()!, q, readingLanguage(current()!)).text, library.settings.wpm, q.pauseMs, library.settings.pauseMultiplier),
+    timerRemaining: playing || readingTimer.paused ? readingTimer.remaining(performance.now()) : undefined,
     voiceSpeaking,
     focusMode,
     showTranslation: library.settings.showTranslation,
@@ -546,6 +566,7 @@ function renderReader(): void {
     const control = Array.from(host.querySelectorAll('button')).find((button) => button.getAttribute('aria-label') === controlLabel);
     control?.focus({ preventScroll: true });
   }
+  if (paceFocused) host.querySelector<HTMLInputElement>('.reader-pace input')?.focus({ preventScroll: true });
   prepareFocusedAnnotations(p, q);
 }
 function prepareFocusedAnnotations(project: Project, phrase: Phrase): void {
@@ -759,6 +780,11 @@ function render(): void {
       persist();
       syncNavigation('push');
       renderRows();
+    },
+    directionColor: (value) => {
+      library.settings.stageDirectionColor = value;
+      persist();
+      applyShellSettings(library.settings, t());
     },
     guide: showGuide,
   });

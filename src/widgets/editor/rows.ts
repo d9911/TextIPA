@@ -6,6 +6,7 @@ import { projectColumns, phraseVersion, languageLabel } from '../../domain/colum
 import type { Language } from '../../types/domain.ts';
 import type { Settings } from '../../types/domain.ts';
 import { pronunciationText } from '../../features/pronunciation/annotated-text.ts';
+import { stageDirectionView } from '../../features/pronunciation/stage-direction.ts';
 import { tooltip } from '../../shared/ui/tooltip.ts';
 interface RowsOptions {
   project: Project;
@@ -104,6 +105,37 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
       view.append(...pronunciationText(version, language, options.ipaDisplay, copy));
       cell.prepend(view);
     };
+    const addDirectionField = (cell: HTMLElement, version: Parameters<typeof pronunciationText>[0], language: string) => {
+      const field = element('textarea', 'stage-direction-input');
+      field.value = version.stageDirection ?? '';
+      field.rows = 2;
+      field.maxLength = 3000;
+      field.disabled = busy;
+      field.lang = language;
+      field.placeholder = copy.stageDirectionPlaceholder;
+      field.addEventListener('focus', options.checkpoint);
+      field.addEventListener('input', () => {
+        version.stageDirection = field.value;
+        if (language !== p.language) {
+          q.translations ??= {};
+          q.translations[language] = version;
+        }
+        options.changed();
+        if (options.focused() === q.id) options.reader();
+      });
+      const editor = labelled(
+        copy.stageDirection + ' · ' + languageLabel(language, options.locale) + ' ' + ordinals.get(q.id)!,
+        field,
+        'stage-direction-field',
+      );
+      cell.append(editor);
+      if (options.focusMode) {
+        editor.hidden = true;
+        const cue = stageDirectionView(version.stageDirection, copy);
+        if (cue) cell.prepend(cue);
+      }
+    };
+    addDirectionField(left, q, p.language);
     preview(left, q, p.language);
     if (inlineReading && !(options.showTranslation && p.columnLanguages)) {
       right.hidden = true;
@@ -158,6 +190,7 @@ export function editorRows(host: HTMLElement, options: RowsOptions): void {
           if (options.focused() === q.id) options.reader();
         });
         cell.append(element('span', 'field-label', languageLabel(code, options.locale)), translated, transcription);
+        addDirectionField(cell, version, code);
         preview(cell, version, code);
         columns.append(cell);
       }

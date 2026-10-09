@@ -15,6 +15,7 @@ export function watchFooter(footer: HTMLElement): void {
   footerObserver.observe(footer);
 }
 export function applyShellSettings(settings: Settings, copy: Copy): void {
+  document.documentElement.style.setProperty('--stage-direction-color', settings.stageDirectionColor);
   document.body.classList.toggle('header-sticky', settings.headerSticky);
   document.body.classList.toggle('sidebar-collapsed', settings.sidebarCollapsed);
   for (const key of ['headerSticky', 'sidebarCollapsed', 'scrollToPhrase', 'showTranslation'] as const) {

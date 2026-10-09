@@ -724,3 +724,41 @@ body.focus-mode .header {
     transition: none;
   }
 }
+
+.reader-pace {
+  max-width: 360px;
+  margin: 16px auto;
+}
+.reader {
+  scroll-margin-top: calc(var(--header-height, 80px) + 16px);
+}
+
+.stage-direction {
+  color: var(--stage-direction-color, #e89b44);
+  border: 1px dashed currentColor;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 0 0 20px;
+  font-style: normal;
+  line-height: 1.5;
+  grid-column: 1 / -1;
+}
+.stage-direction-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.stage-direction p {
+  font-size: 20px;
+  margin: 0;
+  white-space: pre-wrap;
+}
+.stage-direction-field {
+  margin-top: 12px;
+  color: var(--stage-direction-color, #e89b44);
+}
+.stage-direction-input {
+  color: inherit;
+  width: 100%;
+}

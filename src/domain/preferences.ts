@@ -1,6 +1,7 @@
 import type { Dialect, Language, Library, Settings } from '../types/domain.ts';
 export const dialects: Record<Language, Dialect[]> = { es: ['es-ES', 'es-419'], en: ['en-GB', 'en-US'], ru: ['ru-RU'] };
 export const defaultSettings: Settings = {
+  stageDirectionColor: '#e89b44',
   locale: 'ru',
   theme: 'system',
   fontSize: 25,

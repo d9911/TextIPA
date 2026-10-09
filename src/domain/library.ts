@@ -41,11 +41,13 @@ export function validateProject(value: unknown): Project {
         const state = string(version.ipaStatus, 10) as Phrase['ipaStatus'];
         if (!statuses.includes(state)) throw new Error('INVALID_FILE');
         translations[tag] = { text: string(version.text, 3000), ipa: string(version.ipa, 5000), ipaStatus: state };
+        if (version.stageDirection !== undefined) translations[tag]!.stageDirection = string(version.stageDirection, 3000);
         if (version.wordIpa !== undefined) translations[tag]!.wordIpa = validateWordIpa(version.wordIpa, translations[tag]!.text);
       }
     }
     return {
       id,
+      ...(q.stageDirection !== undefined ? { stageDirection: string(q.stageDirection, 3000) } : {}),
       block: string(q.block, 250),
       text: string(q.text, 1500),
       ipa: string(q.ipa, 5000),
@@ -106,6 +108,7 @@ export function validateLibrary(value: unknown): Library {
     for (const key of ['scrollToPhrase', 'headerSticky', 'sidebarCollapsed', 'showTranslation'] as const) {
       if (typeof s[key] === 'boolean') base.settings[key] = s[key];
     }
+    if (typeof s.stageDirectionColor === 'string' && /^#[0-9a-f]{6}$/i.test(s.stageDirectionColor)) base.settings.stageDirectionColor = s.stageDirectionColor;
     if (languages.includes(String(s.locale))) base.settings.locale = s.locale as Language;
     if (['light', 'dark', 'system'].includes(String(s.theme))) base.settings.theme = s.theme as Library['settings']['theme'];
     if (s.ipaDisplay === 'above' || s.ipaDisplay === 'line') base.settings.ipaDisplay = s.ipaDisplay;
@@ -210,6 +213,7 @@ export function fingerprint(p: Project): string {
     p.phrases.map((q) => [
       q.block,
       q.text.trim(),
+      q.stageDirection ?? '',
       q.ipa,
       q.pauseMs,
       q.translation ?? '',
@@ -235,7 +239,13 @@ export function mergeProjects(existing: Project[], incoming: Project[]): { proje
 }
 export function exportMarkdown(project: Project): string {
   const languages = projectColumns(project);
-  const headings = ['Block', ...languages.flatMap((code) => [code + ' text', code + ' IPA']), 'Pause (s)', 'Notes'];
+  const hasDirections = project.phrases.some((q) => languages.some((code) => phraseVersion(project, q, code).stageDirection?.trim()));
+  const headings = [
+    'Block',
+    ...languages.flatMap((code) => [code + ' text', code + ' IPA', ...(hasDirections ? [code + ' direction (do not read aloud)'] : [])]),
+    'Pause (s)',
+    'Notes',
+  ];
   const lines = [
     '# ' + project.title,
     '',
@@ -248,7 +258,7 @@ export function exportMarkdown(project: Project): string {
   for (const q of project.phrases) {
     const versions = languages.flatMap((code) => {
       const version = phraseVersion(project, q, code);
-      return [version.text, version.ipa];
+      return [version.text, version.ipa, ...(hasDirections ? [version.stageDirection?.trim() ? '{' + version.stageDirection.trim() + '}' : ''] : [])];
     });
     lines.push('| ' + [q.block, ...versions, String(q.pauseMs / 1000), q.note].map(esc).join(' | ') + ' |');
   }

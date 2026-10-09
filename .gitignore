@@ -1,6 +1,10 @@
 node_modules/
 /examples/cable-es.json
 examples/text-ipa-library.json
+# Personal reading scripts.
+/examples/raid-81605zq-ru-es.json
+!/examples/hello-multilingual.json
+!/examples/kolobok-es-ru.json
 dist/
 coverage/
 .DS_Store

@@ -6,12 +6,14 @@ export interface WordIpa {
   ipa: string;
 }
 export interface PhraseVersion {
+  stageDirection?: string;
   text: string;
   ipa: string;
   ipaStatus: IpaStatus;
   wordIpa?: WordIpa[];
 }
 export interface Phrase {
+  stageDirection?: string;
   id: string;
   block: string;
   text: string;
@@ -37,6 +39,7 @@ export interface Project {
   columnLanguages?: string[];
 }
 export interface Settings {
+  stageDirectionColor: string;
   locale: Language;
   theme: 'light' | 'dark' | 'system';
   fontSize: number;
