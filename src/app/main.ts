@@ -34,6 +34,7 @@ import { engineLanguage, languageTag, projectColumns, phraseVersion, editableVer
 import { ipaWords, validWordIpa, displayWordIpa } from '../domain/word-ipa.ts';
 import { requestWordAnnotations } from '../features/pronunciation/word-annotations.ts';
 import { ReadingTimer } from '../domain/reading-timer.ts';
+import { readerCommand } from './reader-keys.ts';
 import { columnSettings } from '../features/preferences/columns-dialog.ts';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -419,7 +420,7 @@ function move(direction: number): void {
     }
     return;
   }
-  if (!playing) readingTimer.reset();
+  readingTimer.reset();
   focusedId = next.id;
   syncNavigation(playing ? 'replace' : 'push');
   if (playing) schedule();
@@ -450,11 +451,11 @@ function updateTimerDisplay(): void {
   if (label && playing) label.textContent = (remaining / 1000).toFixed(1) + ' ' + t().seconds;
   if (progress && playing) {
     progress.max = timerTotal;
-    progress.value = Math.max(0, timerTotal - remaining);
+    progress.value = remaining;
   }
 }
-function jump(edge: 'first' | 'last'): void {
-  if (search) {
+function jump(edge: 'first' | 'last', allBlocks = false): void {
+  if (search || allBlocks) {
     readingTimer.reset();
     const rows = current()?.phrases ?? [];
     focusedId = (edge === 'first' ? rows[0] : rows.at(-1))?.id ?? null;
@@ -961,15 +962,13 @@ document.addEventListener('keydown', (e) => {
     (e.target instanceof HTMLElement && (e.target.matches('input,textarea,select,button,summary,a') || e.target.isContentEditable))
   )
     return;
-  if (e.code === 'Space' && current()) {
+  const command = readerCommand(e);
+  if (command && current()) {
     e.preventDefault();
-    toggleTimer();
-  } else if (e.key === 'ArrowLeft') {
-    e.preventDefault();
-    move(-1);
-  } else if (e.key === 'ArrowRight') {
-    e.preventDefault();
-    move(1);
+    if (command === 'toggle') toggleTimer();
+    else if (command === 'previous') move(-1);
+    else if (command === 'next') move(1);
+    else jump(command, true);
   } else if (e.key === 'Escape' && focusMode) {
     focusMode = false;
     syncNavigation('push');

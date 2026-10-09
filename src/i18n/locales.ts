@@ -135,7 +135,7 @@ const en = {
   speechRate: 'Voice speed',
   pauseScale: 'Pause length',
   timerNote:
-    'Auto-advance follows phrases across blocks at your reading pace, including phrase pauses. Pausing preserves the remaining time. It does not play audio. Space: start/pause; ←/→: change phrase.',
+    'Auto-advance follows phrases across blocks at your reading pace, including phrase pauses. Pausing preserves the remaining time. It does not play audio. Space or P: start/pause; ←/↑/W/A: previous; →/↓/S/D: next; </>: first/last phrase across all blocks. Shortcuts use physical keys in either keyboard layout and ignore letter case.',
   guide: 'IPA guide',
   guideTitle: 'Read the sounds, then the phrase',
   guideHint: 'Broad learning transcription. It does not analyse your recorded voice.',
@@ -312,7 +312,7 @@ const ru: Copy = {
   speechRate: 'Скорость голоса',
   pauseScale: 'Длина пауз',
   timerNote:
-    'Автопрокрутка переключает фразы и переходит в следующий блок по выбранному темпу. Учитываются паузы; после паузы чтение продолжается с оставшегося времени. Звук он не воспроизводит. Пробел: старт/пауза; ←/→: перейти к фразе.',
+    'Автопрокрутка переключает фразы и переходит в следующий блок по выбранному темпу. Учитываются паузы; после паузы чтение продолжается с оставшегося времени. Звук он не воспроизводит. Пробел или P/З: старт/пауза; ←/↑/W/A/Ц/Ф: предыдущая; →/↓/S/D/Ы/В: следующая; </>/Б/Ю: начало/конец всех блоков. Регистр букв не важен.',
   guide: 'Как читать IPA',
   guideTitle: 'Сначала звук, затем фраза',
   guideHint: 'Широкая учебная транскрипция. Вашу аудиозапись она не анализирует.',
@@ -488,7 +488,7 @@ const es: Copy = {
   speechRate: 'Velocidad de voz',
   pauseScale: 'Duración de pausas',
   timerNote:
-    'El avance automático recorre las frases y los bloques al ritmo elegido, incluidas las pausas. Al pausar se conserva el tiempo restante. No reproduce audio. Espacio: iniciar/pausar; ←/→: cambiar frase.',
+    'El avance automático recorre las frases y los bloques al ritmo elegido, incluidas las pausas. Al pausar se conserva el tiempo restante. No reproduce audio. Espacio o P: iniciar/pausar; ←/↑/W/A: anterior; →/↓/S/D: siguiente; </>: primera/última frase de todos los bloques. Se usan las teclas físicas sin distinguir mayúsculas.',
   guide: 'Guía de IPA',
   guideTitle: 'Primero el sonido, después la frase',
   guideHint: 'Transcripción amplia de aprendizaje. No analiza tu grabación.',

@@ -173,6 +173,12 @@ export function workspaceView(options: WorkspaceOptions): { main: HTMLElement; r
       hint(control, text);
     const reader = element('section', 'reader');
     reader.id = 'reader';
+    reader.tabIndex = 0;
+    reader.addEventListener('click', (event) => {
+      if (event.target instanceof HTMLElement && !event.target.closest('button,input,textarea,select,a,summary,[contenteditable]')) {
+        reader.focus({ preventScroll: true });
+      }
+    });
     reader.setAttribute('aria-label', copy.focus);
     main.append(reader);
     const toolbar = element('div', 'row-toolbar');

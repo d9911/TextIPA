@@ -84,7 +84,7 @@ export function readerView(host: Element, options: ReaderOptions): void {
   const progress = element('progress');
   progress.id = 'timer-progress';
   progress.max = options.timerTotal;
-  progress.value = playing || options.timerPaused ? options.timerTotal - (options.timerRemaining ?? options.timerTotal) : 0;
+  progress.value = playing || options.timerPaused ? (options.timerRemaining ?? options.timerTotal) : options.timerTotal;
   progress.setAttribute('aria-label', copy.timerRemaining);
   clock.append(element('span', '', playing ? copy.timerRemaining : copy.timerReady), time, progress);
   options.paceControl.classList.add('reader-pace');
