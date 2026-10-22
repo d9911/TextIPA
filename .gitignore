@@ -3,6 +3,7 @@ node_modules/
 examples/text-ipa-library.json
 # Personal reading scripts.
 /examples/raid-81605zq-ru-es.json
+/examples/*
 !/examples/hello-multilingual.json
 !/examples/kolobok-es-ru.json
 dist/
@@ -45,3 +46,5 @@ Desktop.ini
 /docs/images/*
 !/docs/images/app.jpg
 !/docs/images/reader-line.jpg
+
+package-lock.json
